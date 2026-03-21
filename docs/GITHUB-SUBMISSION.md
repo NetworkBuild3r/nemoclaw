@@ -26,7 +26,7 @@
 - **Enterprise story** (e.g. DevOps / GitOps fleet + shared memory) — your `agents/`, `docs/`, Archivist integration.
 - **Ecosystem**: NVIDIA (Nemotron, embeddings, Bedrock via LiteLLM) + optional partner — describe in README, redact IPs if needed.
 
-## Optional: large trees
+## What’s in the repo
 
-- **`vendor/NemoClaw/`** — consider a **git submodule** pointing at `github.com/NVIDIA/NemoClaw` instead of vendoring full history, or document `git clone` next to this repo.
-- **`archivist-oss/`** — submodule to your fork or document as dependency.
+- **`archivist-oss/`** — **fully included** (Python service + tests + docs). The nested upstream `.git` was moved to **`.upstream-archivist-git-backup/`** (gitignored) so your **local patches** ship with the monorepo. Judges should open **[`archivist-oss/README.md`](../archivist-oss/README.md)** for the full story.
+- **`vendor/NemoClaw/`** — **excluded** (~1GB). Document `git clone https://github.com/NVIDIA/NemoClaw` next to this repo (see root `README.md`).
