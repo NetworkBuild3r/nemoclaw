@@ -1,0 +1,24 @@
+{
+  "mcpServers": {
+    "kubernetes": {
+      "description": "Kubernetes cluster management via mcp-aggregator (HTTP MCP; mcporter uses streamable-http first, SSE fallback)",
+      "url": "http://192.168.11.160:8080/kubernetes/mcp"
+    },
+    "argocd": {
+      "description": "ArgoCD GitOps continuous delivery via mcp-aggregator (HTTP MCP; mcporter uses streamable-http first, SSE fallback)",
+      "url": "http://192.168.11.160:8080/argocd/mcp"
+    },
+    "grafana": {
+      "description": "Grafana observability dashboards and alerts via mcp-aggregator (HTTP MCP; mcporter uses streamable-http first, SSE fallback)",
+      "url": "http://192.168.11.160:8080/grafana/mcp"
+    },
+    "gitlab": {
+      "description": "GitLab CI/CD pipelines and repositories via mcp-aggregator (HTTP MCP; mcporter uses streamable-http first, SSE fallback)",
+      "url": "http://192.168.11.160:8080/gitlab/mcp"
+    },
+    "archivist": {
+      "description": "Archivist-OSS fleet long-term memory (Qdrant + temporal knowledge graph)",
+      "url": "http://192.168.11.142:3100/mcp/sse"
+    }
+  }
+}

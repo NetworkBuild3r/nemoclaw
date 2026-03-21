@@ -1,0 +1,29 @@
+namespaces:
+  - id: deployer
+    read: ["all"]
+    write: ["deployer", "releaser"]
+    consistency: eventual
+    ttl_days: 60
+
+  - id: pipeline
+    read: ["all"]
+    write: ["pipeline", "releaser"]
+    consistency: eventual
+    ttl_days: 90
+
+  - id: releaser
+    read: ["all"]
+    write: ["releaser"]
+    consistency: session
+
+  - id: curator
+    read: ["curator"]
+    write: ["curator"]
+    consistency: strong
+    ttl_days: null
+
+agent_namespaces:
+  deployer: deployer
+  pipeline: pipeline
+  releaser: releaser
+  curator: curator

@@ -1,0 +1,30 @@
+.env
+.env.*
+!.env.example
+*.token
+**/secrets/
+
+# LiteLLM — real keys must never be pushed (use litellm-config.yaml.example + env / Vault)
+stack/litellm-config.yaml
+
+# Upstream NemoClaw clone (~1GB) — document `git clone https://github.com/NVIDIA/NemoClaw` instead
+vendor/NemoClaw/
+
+# Optional: restore archivist submodule workflow from this backup (not for git)
+.upstream-archivist-git-backup/
+
+# Python / tooling
+**/__pycache__/
+*.pyc
+.pytest_cache/
+
+# OpenClaw global state (co-located under repo; ~/.openclaw is a symlink)
+.openclaw/*
+!.openclaw/README.md
+
+# Per-agent OpenClaw workspace metadata (local only; not for public repo)
+agents/*/.openclaw/
+
+# Vault / systemd env files (canonical under repo; ~/.config/openclaw may symlink here)
+.config/openclaw/*
+!.config/openclaw/README.md

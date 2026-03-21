@@ -1,0 +1,32 @@
+# Copy to litellm-config.yaml (gitignored) and fill from Vault or env.
+# Never commit litellm-config.yaml with real keys.
+#
+# LiteLLM proxy for Bedrock + NVIDIA NIM (see challenge stack).
+
+model_list:
+  - model_name: bedrock/anthropic.claude-3-haiku-20240307-v1:0
+    litellm_params: &bedrock_claude3_haiku
+      model: bedrock/anthropic.claude-3-haiku-20240307-v1:0
+      # Or set AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY in the litellm process env (recommended for GitHub).
+      aws_access_key_id: os.environ/AWS_ACCESS_KEY_ID
+      aws_secret_access_key: os.environ/AWS_SECRET_ACCESS_KEY
+      aws_region_name: us-east-1
+  - model_name: openclaw-kate-haiku
+    litellm_params:
+      <<: *bedrock_claude3_haiku
+  - model_name: openclaw-haiku
+    litellm_params:
+      <<: *bedrock_claude3_haiku
+  - model_name: nvidia/llama-3.3-nemotron-super-49b-v1
+    litellm_params:
+      model: openai/nvidia/llama-3.3-nemotron-super-49b-v1
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: os.environ/NVIDIA_API_KEY
+  - model_name: nvidia/nemotron-mini-4b-instruct
+    litellm_params:
+      model: openai/nvidia/nemotron-mini-4b-instruct
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: os.environ/NVIDIA_API_KEY
+
+general_settings:
+  master_key: sk-litellm-local

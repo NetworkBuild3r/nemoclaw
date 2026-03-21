@@ -1,0 +1,25 @@
+services:
+  archivist:
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - QDRANT_COLLECTION=${QDRANT_COLLECTION:-nemoclaw_memories}
+      - TEAM_MAP_PATH=${TEAM_MAP_PATH:-/data/archivist/config/team_map.yaml}
+      - CURATOR_INTERVAL_MINUTES=${CURATOR_INTERVAL_MINUTES:-30}
+      - METRICS_ENABLED=${METRICS_ENABLED:-true}
+      - EMBED_API_KEY=${EMBED_API_KEY}
+      - EMBED_PROVIDER=${EMBED_PROVIDER:-nvidia}
+    volumes:
+      - archivist-data:/data/archivist
+      - ../sample-memories:/data/memories:ro
+      - ../config:/data/archivist/config:ro
+
+  qdrant:
+    healthcheck:
+      test: ["CMD-SHELL", "timeout 5 bash -c 'cat < /dev/null > /dev/tcp/localhost/6333' 2>/dev/null"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  archivist-data:
