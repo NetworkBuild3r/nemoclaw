@@ -1,0 +1,116 @@
+{
+  "_comment": "Example openclaw.json for NemoClaw NVIDIA stack. Copy to .openclaw/openclaw.json and fill in secrets/paths.",
+  "models": {
+    "mode": "merge",
+    "providers": {}
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "nvidia/nemotron-3-super-120b-a12b"
+      },
+      "workspace": "/home/YOU/nemoclaw/workspace-default",
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    },
+    "list": [
+      { "id": "main" },
+      {
+        "id": "chief",
+        "name": "chief",
+        "workspace": "/home/YOU/nemoclaw/agents/gitops-chief",
+        "agentDir": "/home/YOU/.openclaw/agents/chief/agent"
+      },
+      {
+        "id": "gitbob",
+        "name": "gitbob",
+        "workspace": "/home/YOU/nemoclaw/agents/github-bob",
+        "agentDir": "/home/YOU/.openclaw/agents/gitbob/agent"
+      },
+      {
+        "id": "argo",
+        "name": "argo",
+        "workspace": "/home/YOU/nemoclaw/agents/argocd-argo",
+        "agentDir": "/home/YOU/.openclaw/agents/argo/agent"
+      },
+      {
+        "id": "kubekate",
+        "name": "kubekate",
+        "workspace": "/home/YOU/nemoclaw/agents/k8s-kate",
+        "agentDir": "/home/YOU/.openclaw/agents/kubekate/agent"
+      },
+      {
+        "id": "grafgreg",
+        "name": "grafgreg",
+        "workspace": "/home/YOU/nemoclaw/agents/grafana-greg",
+        "agentDir": "/home/YOU/.openclaw/agents/grafgreg/agent"
+      }
+    ]
+  },
+  "bindings": [
+    { "type": "route", "agentId": "chief",    "match": { "channel": "telegram", "accountId": "chief" } },
+    { "type": "route", "agentId": "gitbob",   "match": { "channel": "telegram", "accountId": "gitbob" } },
+    { "type": "route", "agentId": "argo",     "match": { "channel": "telegram", "accountId": "argo" } },
+    { "type": "route", "agentId": "kubekate", "match": { "channel": "telegram", "accountId": "kubekate" } },
+    { "type": "route", "agentId": "grafgreg", "match": { "channel": "telegram", "accountId": "grafgreg" } }
+  ],
+  "skills": {
+    "load": {
+      "extraDirs": [
+        "/home/YOU/nemoclaw/openclaw-skills"
+      ]
+    },
+    "entries": {}
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "accounts": {
+        "chief": {
+          "name": "chief",
+          "enabled": true,
+          "tokenFile": "/home/YOU/.openclaw/secrets/telegram/chief.token"
+        },
+        "gitbob": {
+          "name": "gitbob",
+          "enabled": true,
+          "tokenFile": "/home/YOU/.openclaw/secrets/telegram/gitbob.token"
+        },
+        "argo": {
+          "name": "argo",
+          "enabled": true,
+          "tokenFile": "/home/YOU/.openclaw/secrets/telegram/argo.token"
+        },
+        "kubekate": {
+          "name": "kubekate",
+          "enabled": true,
+          "tokenFile": "/home/YOU/.openclaw/secrets/telegram/kubekate.token"
+        },
+        "grafgreg": {
+          "name": "grafgreg",
+          "enabled": true,
+          "tokenFile": "/home/YOU/.openclaw/secrets/telegram/grafgreg.token"
+        }
+      }
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "mode": "local",
+    "bind": "loopback",
+    "auth": {
+      "mode": "token",
+      "token": "GENERATE_A_RANDOM_TOKEN_HERE"
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": { "enabled": true }
+    }
+  }
+}

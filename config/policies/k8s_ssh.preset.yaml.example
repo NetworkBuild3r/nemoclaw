@@ -1,0 +1,31 @@
+# K8s SSH — network policy preset for NemoClaw sandbox
+# Copy to k8s_ssh.preset.yaml and replace the placeholder IPs
+# with the actual IPs of your K8s controller and worker nodes.
+preset:
+  name: k8s_ssh
+  description: "SSH access to K8s cluster nodes (controller + workers)"
+
+network_policies:
+  k8s_ssh:
+    name: k8s_ssh
+    endpoints:
+      - host: ${K8S_CONTROLLER_IP}
+        port: 22
+        access: full
+        allowed_ips:
+          - ${K8S_CONTROLLER_IP}
+      - host: ${K8S_WORKER_1_IP}
+        port: 22
+        access: full
+        allowed_ips:
+          - ${K8S_WORKER_1_IP}
+      - host: ${K8S_WORKER_2_IP}
+        port: 22
+        access: full
+        allowed_ips:
+          - ${K8S_WORKER_2_IP}
+    binaries:
+      - path: /usr/bin/ssh
+      - path: /usr/bin/scp
+      - path: /usr/local/bin/node
+      - path: /usr/bin/node

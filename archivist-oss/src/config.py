@@ -101,6 +101,18 @@ CURATOR_EXTRACT_SKIP_SEGMENTS: list[str] = [
     if p.strip()
 ]
 
+# ── BM25 / FTS5 hybrid search (v1.2 — ReMe-inspired) ────────────────────────
+BM25_ENABLED = os.getenv("BM25_ENABLED", "true").lower() in ("true", "1", "yes")
+BM25_WEIGHT = float(os.getenv("BM25_WEIGHT", "0.3"))
+VECTOR_WEIGHT = float(os.getenv("VECTOR_WEIGHT", "0.7"))
+
+# ── Context window management (v1.1 — ReMe-inspired) ────────────────────────
+DEFAULT_CONTEXT_BUDGET = int(os.getenv("DEFAULT_CONTEXT_BUDGET", "128000"))
+
+# ── Journal exports (v1.5 — human-readable markdown alongside Qdrant) ────────
+JOURNAL_ENABLED = os.getenv("JOURNAL_ENABLED", "true").lower() in ("true", "1", "yes")
+JOURNAL_DIR = os.getenv("JOURNAL_DIR", "/data/archivist/journal")
+
 # ── Server ────────────────────────────────────────────────────────────────────
 MCP_PORT = int(os.getenv("MCP_PORT", "3100"))
 

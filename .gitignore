@@ -7,6 +7,12 @@
 # LiteLLM — real keys must never be pushed (use litellm-config.yaml.example + env / Vault)
 stack/litellm-config.yaml
 
+# Deployment-specific config — use *.example templates for portable copies
+config/mcporter.json
+config/policies/archivist.preset.yaml
+config/policies/mcp_aggregator.preset.yaml
+config/policies/k8s_ssh.preset.yaml
+
 # Upstream NemoClaw clone (~1GB) — document `git clone https://github.com/NVIDIA/NemoClaw` instead
 vendor/NemoClaw/
 
@@ -21,6 +27,16 @@ vendor/NemoClaw/
 # OpenClaw global state (co-located under repo; ~/.openclaw is a symlink)
 .openclaw/*
 !.openclaw/README.md
+
+# NemoClaw state (co-located under repo; ~/.nemoclaw is a symlink)
+.nemoclaw/*
+!.nemoclaw/README.md
+
+# Cursor IDE metadata (local only)
+**/.cursor/
+
+# Nested nemoclaw workspace under GitBob agent (local clone; not a submodule)
+agents/github-bob/nemoclaw/
 
 # Per-agent OpenClaw workspace metadata (local only; not for public repo)
 agents/*/.openclaw/

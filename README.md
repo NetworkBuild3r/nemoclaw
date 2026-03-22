@@ -32,6 +32,8 @@ See [`stack/README.md`](stack/README.md) for LiteLLM + env file notes.
 |------|---------|
 | `archivist-oss/` | **Archivist + Qdrant** service (Python MCP server) — **included in full for GitHub** |
 | `agents/` | GitOps agent workspaces (Chief, GitBob, Argo, Kate, Greg) |
+| `openclaw-skills/` | **OpenClaw runtime** AgentSkills (`SKILL.md` trees); loaded via `skills.load.extraDirs` in `openclaw.json`. See skill **`nemoclaw-skill-builder`** for how to add skills. |
+| `.cursor/skills/` | Symlinks into `openclaw-skills/` for **Cursor** only (same content) |
 | `stack/` | LiteLLM config (example + local gitignored), `docker-compose.override.yml`, stack `.env` |
 | `config/`, `policies/`, `prompts/`, `sample-memories/` | Challenge config and seed memories |
 | `docs/` | Vault docs, submission checklist, Archivist bridge doc |

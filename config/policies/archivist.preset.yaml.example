@@ -1,0 +1,25 @@
+# Archivist MCP — network policy preset for NemoClaw sandbox
+# Copy to archivist.preset.yaml and replace ${ARCHIVIST_HOST} with the IP
+# the sandbox can reach (host bridge IP, not 127.0.0.1).
+#
+# Discover the host bridge IP:
+#   ip -4 addr show docker0 | grep -oP '(?<=inet\s)\d+(\.\d+){3}'
+# or use the Docker host-gateway alias if supported.
+preset:
+  name: archivist
+  description: "Archivist long-term memory service"
+
+network_policies:
+  archivist:
+    name: archivist
+    endpoints:
+      - host: ${ARCHIVIST_HOST}
+        port: 3100
+        access: full
+        allowed_ips:
+          - ${ARCHIVIST_HOST}
+    binaries:
+      - path: /usr/bin/curl
+      - path: /usr/local/bin/openclaw
+      - path: /usr/local/bin/node
+      - path: /usr/bin/node

@@ -2,3 +2,4 @@ deployer: devops
 pipeline: devops
 releaser: devops
 curator: platform
+chief: platform

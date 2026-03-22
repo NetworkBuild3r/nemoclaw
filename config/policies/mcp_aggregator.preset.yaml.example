@@ -1,0 +1,21 @@
+# MCP Aggregator — network policy preset for NemoClaw sandbox
+# Copy to mcp_aggregator.preset.yaml and replace ${MCP_AGGREGATOR_HOST}
+# with the host IP reachable from the sandbox.
+preset:
+  name: mcp_aggregator
+  description: "MCP aggregator (kubernetes, argocd, grafana, gitlab)"
+
+network_policies:
+  mcp_aggregator:
+    name: mcp_aggregator
+    endpoints:
+      - host: ${MCP_AGGREGATOR_HOST}
+        port: 8080
+        access: full
+        allowed_ips:
+          - ${MCP_AGGREGATOR_HOST}
+    binaries:
+      - path: /usr/bin/curl
+      - path: /usr/local/bin/openclaw
+      - path: /usr/local/bin/node
+      - path: /usr/bin/node

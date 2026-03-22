@@ -1,13 +1,13 @@
 namespaces:
   - id: deployer
     read: ["all"]
-    write: ["deployer", "releaser"]
+    write: ["deployer", "releaser", "kubekate", "argo"]
     consistency: eventual
     ttl_days: 60
 
   - id: pipeline
     read: ["all"]
-    write: ["pipeline", "releaser"]
+    write: ["pipeline", "releaser", "gitbob", "grafgreg"]
     consistency: eventual
     ttl_days: 90
 
@@ -22,7 +22,18 @@ namespaces:
     consistency: strong
     ttl_days: null
 
+  - id: chief
+    read: ["all"]
+    write: ["chief"]
+    consistency: session
+    ttl_days: null
+
 agent_namespaces:
+  chief: chief
+  gitbob: pipeline
+  argo: deployer
+  kubekate: deployer
+  grafgreg: pipeline
   deployer: deployer
   pipeline: pipeline
   releaser: releaser
