@@ -1,74 +1,119 @@
 # Inspiration & Build Reference
 
-This document tracks external projects that influenced Archivist-OSS design
-decisions, what we adopted, what we deliberately chose not to adopt, and the
-rationale behind each change.
+Archivist-OSS is **synthesis**, not a solo eureka: research, open source,
+papers, and posts from the agent-memory and tooling community—then choosing
+patterns, wiring them into a fleet-oriented memory service, and sometimes
+declining a fit. This doc **gives credit** where it is due: the hard part here
+is integration and execution; the ideas came from many places.
+
+**Credits:** [Sources & inspiration](#sources--inspiration) (short entries). The
+long **version notes** below are the ReMe-alignment paper trail for what shipped
+when.
 
 ---
 
-## ReMe (agentscope-ai/ReMe)
+## Sources & inspiration
 
-**Repository:** https://github.com/agentscope-ai/ReMe
-**Reviewed:** 2026-03-21
-**What it is:** A memory management toolkit for AI agents with two systems:
-a file-based memory system (ReMeLight) and a vector-based memory system
-with personal, procedural, and tool memory types.
+Short **Upstream** / **In Archivist** notes—ideas and our implementations, not
+vendored trees.
 
-### What we learned
+### [agentscope-ai/ReMe](https://github.com/agentscope-ai/ReMe)
 
-ReMe tackles two problems Archivist originally didn't address directly:
-**limited context windows** (early information lost in long conversations)
-and **stateless sessions** (new sessions can't inherit history).
+**Upstream:** Agent memory toolkit—file + vector memory, context checks,
+structured compaction, hybrid vector + BM25.
 
-Their "memory as files" philosophy (MEMORY.md, daily journals, raw dialog
-JSONL) makes memory human-readable and debuggable — a stark contrast to
-Archivist's Qdrant-only long-term storage.
+**In Archivist:** Major early influence on context/token tooling, structured
+`archivist_compress`, and hybrid weights + FTS5 keyword leg; we expose those via
+**MCP** and keep fleet RBAC / RLM / graph here—not a ReMe port.
 
-### Strengths we don't have (yet)
+---
 
-| Capability | ReMe approach | Archivist status |
-|---|---|---|
-| Context window management | `check_context()` with token counting, reserve-from-tail, message splitting | ✅ `archivist_context_check` MCP tool (v1.1) |
-| Conversation compaction | `compact_memory()` produces structured summaries (Goal/Progress/Decisions/Next Steps/Critical Context) | ✅ `archivist_compress` supports `format=structured` (v1.1) |
-| Pre-reasoning hook | `pre_reasoning_hook()` runs before every agent step: compact tools, check context, compact if needed, persist async | No equivalent — agent-side hook planned for OpenClaw |
-| BM25 / keyword search | Vector (0.7) + BM25 (0.3) weighted hybrid retrieval | ✅ FTS5 hybrid search (v1.2) — same 0.7/0.3 weights, SQLite FTS5 |
-| Token counting | Model-specific via tiktoken with `chars//4` fallback | ✅ `tokenizer.py` with tiktoken + fallback (v1.1) |
-| Tool result compaction | Detects long outputs, truncates, stores full in file, keeps reference | Not implemented |
-| Session-level memory | `ReMeInMemoryMemory` with `estimate_tokens()` and JSONL persistence | No in-session memory management |
-| Formal benchmarks | LoCoMo (86.23 overall), HaluMem (88.78 QA accuracy) | No benchmark results yet |
+### [roli-lpci/zer0dex](https://github.com/roli-lpci/zer0dex) — Apache-2.0
 
-### Strengths we already have that ReMe lacks
+**Upstream:** Dual-layer agent memory: compressed index plus vector store.
 
-| Capability | Archivist | ReMe |
-|---|---|---|
-| Multi-agent fleet with RBAC | Namespace-based access control, team mapping, per-agent filtering | Single-user only, no ACL |
-| Knowledge graph | SQLite entities/relationships/facts with multi-hop traversal | No structured knowledge |
-| 10-stage retrieval pipeline (RLM) | Vector + graph + temporal decay + hotness + rerank + refinement + synthesis | Flat vector + BM25 fusion |
-| MCP protocol | Language-agnostic MCP over HTTP SSE — any framework can use it | Python-only API |
-| Background curation | Autonomous LLM entity/fact extraction from memories | No background processing |
-| Observability | Prometheus metrics, retrieval logs, health dashboard, batch heuristic | None |
-| Skill registry & trajectory | Structured learning from execution patterns, tips, ratings | No equivalent |
-| Hierarchical chunking | Parent/child with L0/L1/L2 tiered context | Flat chunking only |
+**In Archivist:** The idea of a short navigational “compressed index” / semantic
+TOC next to dense retrieval. Implemented in `compressed_index.py` (namespace /
+fleet index; `archivist_index`). No zer0dex source copied in.
 
-### Design decisions
+---
 
-**Why we keep MCP instead of adopting ReMe's Python API:**
-Archivist serves a fleet of agents that may be implemented in different
-languages and frameworks. MCP over HTTP SSE is the right abstraction for
-a shared memory service. ReMe's tight Python integration makes sense for
-single-agent use but doesn't scale to fleet architectures.
+### [andrewyng/context-hub](https://github.com/andrewyng/context-hub) — MIT
 
-**Why context management belongs in the agent loop, not in Archivist:**
-Archivist is a memory *service* (store, index, retrieve). Context window
-management is an *agent-side* concern. The plan is to expose
-`archivist_context_check` and `archivist_compact` as MCP tools, but the
-actual pre-reasoning hook should live in the agent framework (OpenClaw).
+**Upstream:** Context tooling for agents (see their README).
 
-**Why we're choosing SQLite FTS5 over rank_bm25 for hybrid search:**
-Archivist already uses SQLite for the knowledge graph, audit logs, skills,
-and trajectory. Adding FTS5 tables keeps the stack simple — no new
-dependencies, persistent index, same filtering as graph queries, and no
-RAM pressure from loading the full corpus into memory.
+**In Archivist:** No code paths or comments reference this repo yet—listed as
+related reading. Skill/context work here is homegrown (`skills.py`, MCP tools,
+roadmap).
+
+---
+
+### arXiv [2603.04257](https://arxiv.org/abs/2603.04257) — *Memex(RL): … Indexed Experience Memory*
+
+**In Archivist:** Same *problem shape* as tiered / indexed working context:
+compact layers plus drill-down to full text. `tiering.py`, `archivist_deref`;
+`config.py` calls tiered context “OpenViking / Memex-inspired.” We did not
+implement their RL training stack.
+
+---
+
+### arXiv [2603.04448](https://arxiv.org/abs/2603.04448) — *SkillNet: … AI Skills*
+
+**In Archivist:** We have a skill registry and tools in the same broad area;
+nothing in-tree is attributed to SkillNet specifically. Cite the paper if we
+borrow a concrete mechanism later.
+
+---
+
+### arXiv [2603.12056](https://arxiv.org/abs/2603.12056) — *XSkill: … Experience and Skills…*
+
+**In Archivist:** Experience vs skill split in `memory_type` (roadmap v0.7+)
+is a similar *idea*; implementation is ours, not ported from XSkill.
+
+---
+
+### arXiv [2603.10062](https://arxiv.org/abs/2603.10062) — *Multi-Agent Memory from a Computer Architecture Perspective* (CC BY 4.0 on abstract page)
+
+**In Archivist:** Layered / cache-like framing of multi-agent memory lines up
+with our three-layer story (session → hot cache → Qdrant/SQLite) in
+`docs/ROADMAP.md` v0.8.0 and `config.py`. No figures or PDF excerpts in the
+repo—just this citation.
+
+---
+
+### arXiv [2603.10600](https://arxiv.org/abs/2603.10600) — *Trajectory-Informed Memory…* (CC BY 4.0 on abstract page)
+
+**In Archivist:** Trajectory logging, tips, decision attribution, outcome-aware
+scores (`trajectory.py`; module cites this arXiv id). Our implementation; not
+paper reference code.
+
+---
+
+### [The New Stack — batch size / “gravity”](https://thenewstack.io/ai-agents-batch-size-gravity/) — *Why AI systems are failing in familiar ways*
+
+**In Archivist:** “When things are unhealthy, work in smaller batches” as an
+operational metaphor → `batch_heuristic()` / `archivist_batch_heuristic` in
+`dashboard.py` (1–10 score from conflicts, staleness, cache hits, degraded
+skills). Inspired by the article’s framing, not a transcription of it.
+
+---
+
+### [volcengine/OpenViking](https://github.com/volcengine/OpenViking) — Apache-2.0
+
+**Upstream:** Filesystem-oriented agent context DB; hierarchical delivery,
+skills.
+
+**In Archivist:** Hotness formula called out in `hotness.py` as adapted from
+OpenViking (`sigmoid(log1p(count)) × exponential recency decay`). Tiered
+context note in `config.py`. Our stack is MCP + SQLite/Qdrant; no OpenViking
+tree vendored in.
+
+---
+
+### [X post](https://x.com/i/status/2032465974159618452)
+
+**In Archivist:** Bookmark for traceability—add a note here if it informed a
+concrete decision.
 
 ---
 
@@ -360,22 +405,3 @@ SQLite locked) would hammer the failing service every interval.
 **Fix:** Exponential backoff on failure (double the interval, capped at
 1 hour), reset to base interval on success. This reduces load on failing
 dependencies while preserving normal cycle timing when healthy.
-
----
-
-## Planned improvements (from ReMe comparison)
-
-These items are tracked in the Cursor plan `archivist_vs_reme_review`.
-
-- ~~**Context window management**~~ — Done in v1.1.0.
-- ~~**Structured compaction**~~ — Done in v1.1.0.
-- ~~**BM25 hybrid search**~~ — Done in v1.2.0.
-- ~~**MCP server refactor**~~ — Done in v1.0.1.
-- ~~**Curator checksum guards**~~ — Done in v1.3.0.
-- ~~**Entity extraction improvement**~~ — Done in v1.3.0.
-- ~~**Documentation update**~~ — Done in v1.4.0. All 30 tools documented.
-- ~~**Test coverage**~~ — Done in v1.4.0. pytest infrastructure + 55 new tests.
-
-- ~~**Human-readable journal exports**~~ — Done in v1.5.0. Daily markdown files alongside Qdrant.
-
-All items from the original ReMe comparison review have been addressed.

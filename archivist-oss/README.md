@@ -222,13 +222,21 @@ For multi-agent setups, create a `team_map.yaml` (see [`team_map.yaml.example`](
 | `/admin/retrieval-logs` | GET | Export retrieval pipeline logs and stats |
 | `/admin/dashboard` | GET | Health dashboard (add `?batch=true` for batch heuristic) |
 
+## Credits & inspiration
+
+Archivist is **integration and execution** on top of a lot of public work: open-source
+memory tooling, research papers, blog posts, and ideas from the agent community.
+We are not claiming every pattern was invented here. For **who inspired what**
+(ReMe, hybrid retrieval ideas, trajectory-memory papers, batch-heuristic framing,
+and more), see **[`docs/INSPIRATION.md`](docs/INSPIRATION.md)**.
+
 ## Further Documentation
 
 | Document | Description |
 |----------|-------------|
 | [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) | Module map, data flow, storage schema, per-version operational notes |
 | [`docs/ROADMAP.md`](docs/ROADMAP.md) | Full version history and future plans |
-| [`docs/INSPIRATION.md`](docs/INSPIRATION.md) | Design influences and comparison with ReMe |
+| [`docs/INSPIRATION.md`](docs/INSPIRATION.md) | **Credits & lineage:** community and research influences, ReMe comparison, what we adopted vs. built ourselves |
 | [`docs/REMOTES.md`](docs/REMOTES.md) | Multi-remote Git workflow for internal + public repos |
 | [`CONTRIBUTING.md`](CONTRIBUTING.md) | Development conventions |
 
