@@ -1,3 +1,7 @@
+# Archivist namespaces: GitOps fleet + AHEAD Palo Alto demo (memory-as-message-bus).
+# Mount: stack/docker-compose.override.yml -> /data/archivist/config/namespaces.yaml
+# Restart archivist after edits: docker compose restart archivist
+
 namespaces:
   - id: deployer
     read: ["all"]
@@ -28,6 +32,37 @@ namespaces:
     consistency: session
     ttl_days: null
 
+  # --- AHEAD demo: task bus + capability build + firewall ops ---
+  - id: tasks
+    read: ["all"]
+    write: ["ahead-chief", "chief"]
+    consistency: eventual
+    ttl_days: 30
+
+  - id: mcp-engineering
+    read: ["all"]
+    write: ["mcp-builder"]
+    consistency: eventual
+    ttl_days: 60
+
+  - id: skills-research
+    read: ["all"]
+    write: ["researcher", "skill-author"]
+    consistency: eventual
+    ttl_days: 90
+
+  - id: skill-engineering
+    read: ["all"]
+    write: ["skill-builder"]
+    consistency: eventual
+    ttl_days: 90
+
+  - id: firewall-ops
+    read: ["all"]
+    write: ["palo-expert"]
+    consistency: eventual
+    ttl_days: 60
+
 agent_namespaces:
   chief: chief
   gitbob: pipeline
@@ -38,3 +73,9 @@ agent_namespaces:
   pipeline: pipeline
   releaser: releaser
   curator: curator
+  ahead-chief: tasks
+  mcp-builder: mcp-engineering
+  researcher: skills-research
+  skill-author: skills-research
+  skill-builder: skill-engineering
+  palo-expert: firewall-ops

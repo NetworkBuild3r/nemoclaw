@@ -135,7 +135,7 @@ print(create_snapshot())
 
 # Upload snapshot + workspaces
 openshell sandbox upload openclaw ~/.nemoclaw/snapshots/<timestamp>/openclaw /sandbox/.openclaw --no-git-ignore
-openshell sandbox upload openclaw ~/nemoclaw/agents/gitops-chief /sandbox/.nemoclaw/migration/workspaces/workspaces-chief-workspace --no-git-ignore
+openshell sandbox upload openclaw ~/nemoclaw/agents/chief /sandbox/.nemoclaw/migration/workspaces/workspaces-chief-workspace --no-git-ignore
 # ... repeat for each agent workspace and openclaw-skills
 ```
 

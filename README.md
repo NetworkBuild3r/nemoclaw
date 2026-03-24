@@ -57,7 +57,23 @@ See [`stack/README.md`](stack/README.md) for LiteLLM + env file notes.
 
 ## GitHub / submission
 
-- **[`docs/GITHUB-SUBMISSION.md`](docs/GITHUB-SUBMISSION.md)** — checklist (slide, &lt;5 min video, public repo, no secrets).
+- **[`docs/GITHUB-SUBMISSION.md`](docs/GITHUB-SUBMISSION.md)** — checklist (slide, <5 min video, public repo, no secrets).
+
+### Demo recording
+
+| Shot | What to show | Source |
+|------|-------------|--------|
+| 1. NemoClaw sandbox | `nemoclaw openclaw status` — policies, model, sandbox phase | Terminal |
+| 2. Blocked egress | `curl` to a forbidden host → OpenShell deny in logs | Terminal + `openshell` |
+| 3. Task delegation | `ahead-chief` stores task brief in Archivist `tasks` | `mcp-call archivist archivist_store` |
+| 4. Build + push | `docker build` / `docker push` paloalto-mcp image | Terminal |
+| 5. Deploy + smoke | `kubectl apply` → `mcp-call paloalto panos_show_system_info` | Terminal + MCP |
+| 6. Archivist proof | `mcp-builder` stores evidence in `mcp-engineering` | `mcp-call archivist` |
+| 7. Firewall audit | `palo-expert` calls PAN-OS tools, stores in `firewall-ops` | `mcp-call paloalto` + Archivist |
+| 8. Cross-team synthesis | `ahead-chief` → `archivist_insights` merges all namespaces | `mcp-call archivist` |
+| 9. Chief spawn (optional) | Chief via Telegram → `sessions_spawn` → skill-builder | Telegram + gateway log |
+
+See [`docs/AHEAD-DEMO-RUNBOOK.md`](docs/AHEAD-DEMO-RUNBOOK.md) for the full runbook and [`docs/DEMO-SKILL-BUILD-VIDEO.md`](docs/DEMO-SKILL-BUILD-VIDEO.md) for the Chief two-turn spawn flow.
 - **Secrets:** never commit `stack/litellm-config.yaml` (use `stack/litellm-config.yaml.example`), `.openclaw/`, or `.config/openclaw/` secrets.
 
 **License:** [`LICENSE`](LICENSE) (Apache-2.0); components like `archivist-oss/` retain their own `LICENSE` where present.

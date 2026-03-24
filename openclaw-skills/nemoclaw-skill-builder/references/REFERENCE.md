@@ -5,6 +5,8 @@
 | Mistake | Fix |
 |---------|-----|
 | Skills only under **`.cursor/skills/`** | OpenClaw **does not** read that path. Canonical tree is **`openclaw-skills/`** + **`skills.load.extraDirs`** in `openclaw.json`. |
+| Skill “done” only in **Archivist** / **`skill-engineering`** | Archivist is **not** the skill registry. Copy **`SKILL.md`** into **`openclaw-skills/<name>/`**, symlink **`.cursor/skills/<name>`**, **commit**, restart gateway. |
+| **Synology** (or any) skill authored in a session but not in **`openclaw-skills/`** | Same fix: add **`openclaw-skills/synology/`** (or the chosen name), symlink, commit, restart gateway. |
 | Duplicated `SKILL.md` in two places | One tree in **`openclaw-skills/<name>/`**; **`.cursor/skills/<name>`** → symlink only. |
 | Expecting per-agent `.cursor/skills` to run bots | Runtime uses **workspace** + **extraDirs** + managed/bundled dirs (see OpenClaw `loadSkillEntries` in `node_modules/openclaw/dist/skills-*.js`). |
 | Agent only “sees” AGENTS.md / SOUL.md / TOOLS.md | **Bootstrap** does not include `SKILL.md`. Add **`skills` → `../../openclaw-skills`** under each `agents/<role>/` so `skills/<name>/SKILL.md` exists as readable paths; document in TOOLS.md / AGENTS.md. **`workspace-default`:** use `ln -sfn ../openclaw-skills skills` (one `..`, not two). |
@@ -34,6 +36,11 @@ mkdir -p openclaw-skills/my-new-skill/references
 # 2. Cursor symlink
 mkdir -p .cursor/skills
 ln -sfn ../../openclaw-skills/my-new-skill .cursor/skills/my-new-skill
+
+# 3. Commit + gateway (so fleet bots pick up the skill)
+# git add openclaw-skills/my-new-skill .cursor/skills/my-new-skill
+# git commit -m "Add skill my-new-skill"
+# systemctl --user restart openclaw-gateway.service
 ```
 
 ## Checklist before merge

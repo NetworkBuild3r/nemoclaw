@@ -35,8 +35,9 @@ vendor/NemoClaw/
 # Cursor IDE metadata (local only)
 **/.cursor/
 
-# Nested nemoclaw workspace under GitBob agent (local clone; not a submodule)
+# Nested repos under GitBob agent (local clones; not submodules)
 agents/github-bob/nemoclaw/
+agents/github-bob/home_k3/
 
 # Per-agent OpenClaw workspace metadata (local only; not for public repo)
 agents/*/.openclaw/

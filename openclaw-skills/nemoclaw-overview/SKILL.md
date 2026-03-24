@@ -19,7 +19,7 @@ Give agents and humans a reliable mental map of the **nemoclaw** repository: wha
 1. **Single home directory:** Treat the repository root as the canonical place for NemoClaw / OpenClaw / Archivist / LiteLLM operations; start from `README.md` at the repo root.
 2. **Archivist (memory):** Implementation and upstream-style docs live in `archivist-oss/`. Bridge doc: `docs/ARCHIVIST.md`. Start with `archivist-oss/README.md` for architecture and MCP URL patterns.
 3. **Runtime stack:** LiteLLM + compose overrides are under `stack/` (`stack/README.md`, `stack/docker-compose.override.yml`). Real `litellm-config.yaml` is gitignored; use `stack/litellm-config.yaml.example`.
-4. **Agents:** Per-agent workspaces under `agents/` (e.g. `gitops-chief`, `github-bob`, `argocd-argo`, `k8s-kate`, `grafana-greg`) with `AGENTS.md`, `SOUL.md`, and optional `TOOLS.md`.
+4. **Agents:** Per-agent workspaces under `agents/` (e.g. `chief`, `github-bob`, `argocd-argo`, `k8s-kate`, `grafana-greg`) with `AGENTS.md`, `SOUL.md`, and optional `TOOLS.md`.
 5. **Secrets:** Do not expect API keys in `nemoclaw/.env` (comments only). Project secrets use HashiCorp Vault paths documented in `docs/vault-project-env.md` and `docs/vault-telegram-bots.md`. OpenClaw runtime state is under `.openclaw/` (often gitignored); host env files under `.config/openclaw/` (see `.config/openclaw/README.md`).
 6. **MCP client config:** `config/mcporter.json` lists HTTP MCP servers (Kubernetes, Argo CD, Grafana, GitLab, Archivist). Hosts are deployment-specific — see skill `nemoclaw-mcp-fleet`.
 7. **Vendor:** `vendor/NemoClaw/` is optional upstream clone (not in git). Document clone URL in repo `README.md` instead of committing the tree.

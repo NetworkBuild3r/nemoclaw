@@ -1,5 +1,14 @@
+# Archivist TEAM_MAP: agent_id -> team label (metadata / graph). See TEAM_MAP_PATH in stack.
 deployer: devops
 pipeline: devops
 releaser: devops
 curator: platform
 chief: platform
+
+# AHEAD Palo Alto demo
+ahead-chief: leadership
+mcp-builder: platform-engineering
+researcher: research
+skill-author: research
+skill-builder: research
+palo-expert: security-ops

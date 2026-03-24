@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: paloalto-mcp
+  labels:
+    app: paloalto-mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: paloalto-mcp
+  template:
+    metadata:
+      labels:
+        app: paloalto-mcp
+    spec:
+      containers:
+        - name: paloalto-mcp
+          # Replace with your registry image after docker build
+          image: 192.168.11.170:5000/paloalto-mcp:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8765
+              name: mcp
+          env:
+            - name: MCP_PORT
+              value: "8765"
+            - name: PANOS_MOCK
+              value: "1"
+            # For live PAN-OS: set PANOS_MOCK=0 and add PANOS_HOST / PANOS_API_KEY via Secret + env patch
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: mcp
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: mcp
+            initialDelaySeconds: 10
+            periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: paloalto-mcp
+spec:
+  selector:
+    app: paloalto-mcp
+  ports:
+    - port: 8765
+      targetPort: mcp
+      name: mcp

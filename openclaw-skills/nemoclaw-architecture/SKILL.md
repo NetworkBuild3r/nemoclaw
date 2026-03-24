@@ -67,11 +67,27 @@ nemoclaw-blueprint/
 
 Five phases, in order: **Resolve → Verify → Plan → Apply → Status**.
 
-1. **Resolve** — locate artifact, check version against `min_openshell_version` and `min_openclaw_version` in `blueprint.yaml`.
-2. **Verify** — check artifact digest against expected value.
-3. **Plan** — determine which OpenShell resources to create/update (gateway, providers, sandbox, inference route, policy).
-4. **Apply** — execute plan by calling `openshell` CLI commands.
-5. **Status** — report current state.
+The lifecycle spans **two languages**: Resolve and Verify run in the **TypeScript plugin**; Plan, Apply, Status, and Rollback run in the **Python blueprint runner** (`runner.py`). The plugin bridges them by spawning `python3 orchestrator/runner.py <action>` as a child process via `exec.ts`.
+
+**Runner protocol** (stdout line-based):
+- `PROGRESS:<0-100>:<label>` — parsed by the plugin as progress updates.
+- `RUN_ID:<id>` — reports the run identifier (format: `nc-YYYYMMDD-HHMMSS-<8hex>`).
+- Exit code `0` = success, non-zero = failure.
+
+Environment variables set by the plugin: `NEMOCLAW_BLUEPRINT_PATH` (artifact directory), `NEMOCLAW_ACTION` (the action being run).
+
+#### Phase details
+
+1. **Resolve** (TypeScript: `resolve.ts`) — locate the blueprint artifact. Checks local cache at `~/.nemoclaw/blueprints/<version>/` first; falls back to OCI registry download via `fetch.ts`. Returns a `ResolvedBlueprint` with `localPath`, `manifest`, and `cached` flag. Does **not** check version compatibility — that happens in Verify.
+2. **Verify** (TypeScript: `verify.ts`) — two checks: (a) `verifyBlueprintDigest()` computes SHA-256 over every file in the blueprint directory and compares against `manifest.digest`; (b) `checkCompatibility()` compares host `openshell --version` and `openclaw --version` against `min_openshell_version` / `min_openclaw_version` from `blueprint.yaml`.
+3. **Plan** (Python: `runner.py` `action_plan()`) — validates the selected profile exists in `blueprint.yaml`, checks `openshell` CLI is on PATH, resolves sandbox config (image, name, ports) and inference config (provider, endpoint, model, credential env var). Outputs the plan as JSON to stdout.
+4. **Apply** (Python: `runner.py` `action_apply()`) — executes four steps in sequence:
+   - `openshell sandbox create --from <image> --name <name> [--forward <port>]`
+   - `openshell provider create --name <provider> --type <type> [--credential <env>=<val>] [--config OPENAI_BASE_URL=<endpoint>]`
+   - `openshell inference set --provider <provider> --model <model>`
+   - Saves run state to `~/.nemoclaw/state/runs/<run_id>/plan.json`
+5. **Status** (Python: `runner.py` `action_status()`) — reads the most recent (or specified) run's `plan.json` from `~/.nemoclaw/state/runs/` and prints it.
+6. **Rollback** (Python: `runner.py` `action_rollback()`) — stops and removes the sandbox for a given run ID via `openshell sandbox stop` + `openshell sandbox remove`, then marks the run as rolled back.
 
 ### 4. Sandbox Environment
 

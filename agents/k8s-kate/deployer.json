@@ -1,0 +1,6 @@
+{
+  "agent_id": "kubekate",
+  "namespace": "deployer",
+  "text": "Thinkpad (192.168.11.129) is Brian's Kubernetes control plane — the primary k8s controller for his cluster. User `kate` has passwordless sudo and kubectl access confirmed working.",
+  "tags": ["cluster", "node", "controller"]
+}

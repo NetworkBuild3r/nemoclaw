@@ -1,0 +1,120 @@
+# AHEAD Palo Alto demo — OpenShell preset for NemoClaw sandboxes.
+# Copy or merge into your blueprint policy bundle. Replace placeholders with your lab IPs/hosts.
+# Reference: policies/deployer-sandbox-policy.yaml, config/policies/mcp_aggregator.preset.yaml
+
+preset:
+  name: ahead_pan_demo
+  description: "Archivist + MCP aggregator + optional Palo Alto management API"
+
+network_policies:
+  archivist:
+    name: archivist
+    endpoints:
+      - host: 192.168.11.142
+        port: 3100
+        access: full
+        allowed_ips:
+          - 192.168.11.142
+    binaries:
+      - path: /usr/bin/curl
+      - path: /usr/local/bin/openclaw
+      - path: /usr/local/bin/node
+      - path: /usr/bin/node
+
+  mcp_aggregator:
+    name: mcp_aggregator
+    endpoints:
+      - host: 192.168.11.160
+        port: 8080
+        access: full
+        allowed_ips:
+          - 192.168.11.160
+    binaries:
+      - path: /usr/bin/curl
+      - path: /usr/local/bin/openclaw
+      - path: /usr/local/bin/node
+      - path: /usr/bin/node
+
+  # Palo Alto management plane — REST API (HTTPS). Restrict to your firewall MGMT IP.
+  paloalto_mgmt:
+    name: paloalto_mgmt
+    endpoints:
+      - host: pan-mock.local
+        port: 443
+        protocol: rest
+        tls: terminate
+        enforcement: enforce
+        rules:
+          - allow:
+              method: "GET"
+              path: /api/**
+          - allow:
+              method: "POST"
+              path: /api/**
+    binaries:
+      - path: /usr/bin/curl
+
+  # Web search — Brave Search API (MCP server calls outbound HTTPS)
+  brave_search:
+    name: brave_search
+    endpoints:
+      - host: api.search.brave.com
+        port: 443
+        protocol: rest
+        tls: terminate
+        enforcement: enforce
+        rules:
+          - allow:
+              method: "GET"
+              path: /res/v1/web/search
+    binaries:
+      - path: /usr/bin/curl
+
+  nvidia_gateway:
+    name: nvidia
+    endpoints:
+      - host: integrate.api.nvidia.com
+        port: 443
+        protocol: rest
+        tls: terminate
+        enforcement: enforce
+        rules:
+          - allow:
+              method: "*"
+              path: /**
+    binaries:
+      - path: /usr/local/bin/openclaw
+      - path: /usr/bin/curl
+
+  # mcp-builder: push images + pull bases — set hosts to your registry (GHCR, Harbor, ECR mirror, etc.)
+  container_registry:
+    name: container_registry
+    endpoints:
+      - host: ghcr.io
+        port: 443
+        access: full
+      - host: registry-1.docker.io
+        port: 443
+        access: full
+      - host: 192.168.11.170
+        port: 5000
+        access: full
+    binaries:
+      - path: /usr/bin/docker
+
+  # mcp-builder: GitLab API when CI/MR drives build+push (match github-bob / GitLab MCP host)
+  gitlab_api:
+    name: gitlab
+    endpoints:
+      - host: gitlab.ibhacked.us
+        port: 443
+        protocol: rest
+        tls: terminate
+        enforcement: enforce
+        rules:
+          - allow:
+              method: "*"
+              path: /api/**
+    binaries:
+      - path: /usr/bin/curl
+      - path: /usr/local/bin/openclaw

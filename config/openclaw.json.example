@@ -23,7 +23,7 @@
       {
         "id": "chief",
         "name": "chief",
-        "workspace": "/home/YOU/nemoclaw/agents/gitops-chief",
+        "workspace": "/home/YOU/nemoclaw/agents/chief",
         "agentDir": "/home/YOU/.openclaw/agents/chief/agent"
       },
       {

@@ -19,6 +19,14 @@
     "archivist": {
       "description": "Archivist-OSS fleet long-term memory (Qdrant + temporal knowledge graph)",
       "url": "http://192.168.11.142:3100/mcp/sse"
+    },
+    "paloalto": {
+      "description": "Palo Alto PAN-OS management via mcp-aggregator (HTTP MCP; SSE path /paloalto/mcp — align aggregator route to paloalto-mcp Service)",
+      "url": "http://192.168.11.160:8080/paloalto/mcp"
+    },
+    "brave": {
+      "description": "Brave Search web search (streamable HTTP; set BRAVE_API_KEY; default http://127.0.0.1:8770/mcp)",
+      "url": "http://127.0.0.1:8770/mcp"
     }
   }
 }

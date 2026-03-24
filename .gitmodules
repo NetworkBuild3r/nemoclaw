@@ -1,0 +1,3 @@
+[submodule "archivist-oss"]
+	path = archivist-oss
+	url = git@github.com:NetworkBuild3r/archivist-oss.git

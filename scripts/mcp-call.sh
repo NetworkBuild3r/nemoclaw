@@ -12,15 +12,20 @@
 #   mcp-call grafana search_dashboards '{"query":""}'
 #   mcp-call gitlab list_projects '{}'
 #   mcp-call archivist archivist_search '{"query":"cluster health","agent_id":"kubekate"}'
+#   mcp-call brave brave_web_search '{"query":"Palo Alto API docs","count":5}'
 #   mcp-call kubernetes --list
 #   mcp-call archivist --list
 #
-# Servers: kubernetes, argocd, grafana, gitlab, archivist
+# Servers: kubernetes, argocd, grafana, gitlab, archivist, brave
 
 set -euo pipefail
 
 MCP_AGGREGATOR="${MCP_AGGREGATOR:-http://192.168.11.160:8080}"
 ARCHIVIST_URL="${ARCHIVIST_URL:-http://192.168.11.142:3100}"
+# Archivist SSE can take 15–60s+ on cold Qdrant; default read window must exceed that.
+ARCHIVIST_SSE_READ_SECONDS="${ARCHIVIST_SSE_READ_SECONDS:-120}"
+# Brave Search MCP (streamable HTTP POST /mcp) — start: mcp-servers/brave-search/main.py
+BRAVE_MCP_URL="${BRAVE_MCP_URL:-http://127.0.0.1:8770/mcp}"
 
 # --- helpers ----------------------------------------------------------------
 
@@ -30,6 +35,7 @@ resolve_url() {
   local server="$1"
   case "$server" in
     archivist) echo "$ARCHIVIST_URL" ;;
+    brave)     echo "$BRAVE_MCP_URL" ;;
     *)         echo "${MCP_AGGREGATOR}/${server}/mcp" ;;
   esac
 }
@@ -43,8 +49,9 @@ is_json() {
 call_streamable() {
   local url="$1" method="$2" payload="$3"
   local response
-  response=$(curl -sf --max-time 15 -X POST "$url" \
+  response=$(curl -sf --max-time 90 -X POST "$url" \
     -H "Content-Type: application/json" \
+    -H "Accept: application/json, text/event-stream" \
     -d "$payload" 2>/dev/null) || die "no response from $url — is the server running?"
 
   [[ -z "$response" ]] && die "empty response from $url"
@@ -81,6 +88,7 @@ else:
 
 call_sse() {
   local base_url="$1" method="$2" payload="$3"
+  export ARCHIVIST_SSE_READ_SECONDS="${ARCHIVIST_SSE_READ_SECONDS:-120}"
 
   python3 -c "
 import subprocess, json, time, sys, os
@@ -88,6 +96,7 @@ import subprocess, json, time, sys, os
 BASE = sys.argv[1]
 METHOD = sys.argv[2]
 PAYLOAD = json.loads(sys.argv[3])
+SSE_READ = int(os.environ.get('ARCHIVIST_SSE_READ_SECONDS', '120'))
 
 sse = subprocess.Popen(['curl', '-sN', BASE + '/mcp/sse'],
                         stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
@@ -107,9 +116,20 @@ def post(body):
     subprocess.run(['curl', '-s', '-X', 'POST', msg_url,
                      '-H', 'Content-Type: application/json',
                      '-d', json.dumps(body)],
-                    capture_output=True, timeout=10)
+                    capture_output=True, timeout=60)
 
-def read(timeout_s=10):
+def parse_sse_msgs(buf_bytes):
+    out = []
+    for ln in buf_bytes.decode(errors='replace').split('\n'):
+        if ln.startswith('data:'):
+            try:
+                out.append(json.loads(ln[5:].strip()))
+            except Exception:
+                pass
+    return out
+
+def read_until_id(want_id, timeout_s):
+    \"\"\"Stream SSE until a JSON-RPC message with id==want_id (or timeout).\"\"\"
     fd = sse.stdout.fileno()
     os.set_blocking(fd, False)
     end = time.time() + timeout_s
@@ -117,23 +137,27 @@ def read(timeout_s=10):
     while time.time() < end:
         try:
             chunk = sse.stdout.read(8192)
-            if chunk: buf += chunk
-            else: time.sleep(0.1)
+            if chunk:
+                buf += chunk
+                for m in parse_sse_msgs(buf):
+                    if m.get('id') == want_id:
+                        os.set_blocking(fd, True)
+                        return m
+            else:
+                time.sleep(0.05)
         except (BlockingIOError, TypeError):
-            time.sleep(0.1)
+            time.sleep(0.05)
     os.set_blocking(fd, True)
-    out = []
-    for ln in buf.decode(errors='replace').split('\n'):
-        if ln.startswith('data:'):
-            try: out.append(json.loads(ln[5:].strip()))
-            except: pass
-    return out
+    for m in parse_sse_msgs(buf):
+        if m.get('id') == want_id:
+            return m
+    return None
 
 # handshake
 post({'jsonrpc':'2.0','method':'initialize',
       'params':{'protocolVersion':'2024-11-05','capabilities':{},
                 'clientInfo':{'name':'mcp-call','version':'1.0'}},'id':1})
-read(3)
+read_until_id(1, 20)
 post({'jsonrpc':'2.0','method':'notifications/initialized'})
 time.sleep(0.3)
 
@@ -146,12 +170,9 @@ else:
           'params':{'name': PAYLOAD.pop('__tool__'), 'arguments': PAYLOAD},
           'id': req_id})
 
-msgs = read(10)
-found = False
-for m in msgs:
-    if m.get('id') != req_id:
-        continue
-    found = True
+m = read_until_id(req_id, SSE_READ)
+found = m is not None
+if found:
     if 'error' in m:
         e = m['error']
         print(f\"MCP Error {e.get('code','')}: {e.get('message','')}\", file=sys.stderr)
@@ -169,7 +190,7 @@ for m in msgs:
         print(json.dumps(result, indent=2))
 
 if not found:
-    print('Error: no response received from Archivist', file=sys.stderr)
+    print('Error: no response received from MCP (SSE)', file=sys.stderr)
     sse.kill(); sys.exit(1)
 
 sse.kill()
@@ -182,7 +203,7 @@ if [[ $# -lt 2 ]]; then
   echo "Usage: mcp-call <server> <tool> '{\"key\":\"value\"}'"
   echo "       mcp-call <server> --list"
   echo ""
-  echo "Servers: kubernetes, argocd, grafana, gitlab, archivist"
+  echo "Servers: kubernetes, argocd, grafana, gitlab, archivist, brave"
   echo ""
   echo "The third argument MUST be a JSON object. Examples:"
   echo "  mcp-call kubernetes kubectl_get '{\"resourceType\":\"nodes\"}'"

@@ -23,6 +23,8 @@ Connect **mcporter** (and similar MCP clients) to the **HTTP MCP** endpoints dec
    - **grafana** — dashboards, PromQL, alerts (GrafGreg).
    - **gitlab** — projects, MRs, pipelines (GitBob; GitLab API via MCP).
    - **archivist** — fleet long-term memory (all agents, with RBAC).
+   - **paloalto** — Palo Alto PAN-OS management MCP (`mcp-servers/paloalto`; AHEAD demo, `palo-expert`).
+   - **brave** — Brave Search (`mcp-servers/brave-search`, `brave_web_search`, `BRAVE_API_KEY`, `http://127.0.0.1:8770/mcp`).
 3. **Transport:** MCP endpoints use **JSON-RPC over HTTP POST** (streamable HTTP). Do NOT use GET requests — they return 404.
 4. **Calling MCP tools from OpenClaw:** Use the `mcp-call` helper script via `exec`:
    - `mcp-call <server> <tool> '<json-args>'` — call a tool
