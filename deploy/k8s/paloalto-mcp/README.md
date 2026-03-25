@@ -14,14 +14,11 @@ docker push your-registry/paloalto-mcp:latest
 
 Edit `deployment.yaml` image and Secret `panos-credentials` (API key or leave `PANOS_MOCK=1` for dry demos).
 
-## Wire the aggregator
+## Wire clients (`mcporter.json`)
 
-On the host that runs **mcp-aggregator** (this repo uses `http://192.168.11.160:8080/...`), add a route that forwards:
+**Current fleet URL:** [`config/mcporter.json`](../../config/mcporter.json) uses **`http://192.168.11.160:8080/panos/mcp`** for `paloalto` (via **mcp-aggregator**). **GitLab** (`gitlab.ibhacked.us`) holds **source and images**, not this runtime URL.
 
-- Path prefix: `/paloalto` (or your convention)
-- Backend: `http://paloalto-mcp.<namespace>.svc.cluster.local:8765`
-
-So clients use: `http://<aggregator>:8080/paloalto/mcp` — match [`config/mcporter.json`](../../config/mcporter.json) `paloalto.url`.
+On **mcp-aggregator**, forward **`/panos/mcp`** → `http://paloalto-mcp.<namespace>.svc.cluster.local:8765` (preserve MCP subpaths — see `deploy/k8s/mcp-aggregator/README.md`).
 
 ## Apply
 

@@ -1,0 +1,53 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: servicenow-mcp
+  labels:
+    app: servicenow-mcp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: servicenow-mcp
+  template:
+    metadata:
+      labels:
+        app: servicenow-mcp
+    spec:
+      containers:
+        - name: servicenow-mcp
+          image: 192.168.11.170:5000/servicenow-mcp:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8766
+              name: mcp
+          env:
+            - name: MCP_PORT
+              value: "8766"
+            - name: SNOW_MOCK
+              value: "1"
+            # Live: SNOW_MOCK=0, SNOW_INSTANCE=https://YOUR.service-now.com, SNOW_USER, SNOW_PASSWORD from Secret
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: mcp
+            initialDelaySeconds: 3
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: mcp
+            initialDelaySeconds: 10
+            periodSeconds: 30
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: servicenow-mcp
+spec:
+  selector:
+    app: servicenow-mcp
+  ports:
+    - port: 8766
+      targetPort: mcp
+      name: mcp

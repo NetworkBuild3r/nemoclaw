@@ -13,12 +13,18 @@
 #   mcp-call gitlab list_projects '{}'
 #   mcp-call archivist archivist_search '{"query":"cluster health","agent_id":"kubekate"}'
 #   mcp-call brave brave_web_search '{"query":"Palo Alto API docs","count":5}'
+#   mcp-call paloalto panos_show_system_info '{}'
+#   mcp-call servicenow snow_create_incident '{"short_description":"test"}'
 #   mcp-call kubernetes --list
 #   mcp-call archivist --list
 #
-# Servers: kubernetes, argocd, grafana, gitlab, archivist, brave
+# Servers: kubernetes, argocd, grafana, gitlab, archivist, paloalto, servicenow, brave
+# URLs for aggregator servers come from config/mcporter.json (not ${server}/mcp — panos/snow paths differ).
 
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+MCPPORTER_JSON="${MCPPORTER_CONFIG:-$SCRIPT_DIR/../config/mcporter.json}"
 
 MCP_AGGREGATOR="${MCP_AGGREGATOR:-http://192.168.11.160:8080}"
 ARCHIVIST_URL="${ARCHIVIST_URL:-http://192.168.11.142:3100}"
@@ -36,7 +42,30 @@ resolve_url() {
   case "$server" in
     archivist) echo "$ARCHIVIST_URL" ;;
     brave)     echo "$BRAVE_MCP_URL" ;;
-    *)         echo "${MCP_AGGREGATOR}/${server}/mcp" ;;
+  esac
+  [[ "$server" == "archivist" || "$server" == "brave" ]] && return 0
+
+  if [[ -f "$MCPPORTER_JSON" ]]; then
+    local u
+    u=$(python3 -c "
+import json, sys
+try:
+    cfg = json.load(open(sys.argv[1]))
+    ent = cfg.get('mcpServers', {}).get(sys.argv[2], {})
+    print(ent.get('url') or '')
+except Exception:
+    print('')
+" "$MCPPORTER_JSON" "$server" 2>/dev/null) || u=""
+    if [[ -n "$u" ]]; then
+      echo "$u"
+      return 0
+    fi
+  fi
+
+  case "$server" in
+    paloalto)   echo "${MCP_AGGREGATOR}/panos/mcp" ;;
+    servicenow) echo "${MCP_AGGREGATOR}/snow/mcp" ;;
+    *)          echo "${MCP_AGGREGATOR}/${server}/mcp" ;;
   esac
 }
 
@@ -203,7 +232,8 @@ if [[ $# -lt 2 ]]; then
   echo "Usage: mcp-call <server> <tool> '{\"key\":\"value\"}'"
   echo "       mcp-call <server> --list"
   echo ""
-  echo "Servers: kubernetes, argocd, grafana, gitlab, archivist, brave"
+  echo "Servers: kubernetes, argocd, grafana, gitlab, archivist, paloalto, servicenow, brave"
+  echo "Config:  MCPPORTER_CONFIG (default: repo config/mcporter.json)"
   echo ""
   echo "The third argument MUST be a JSON object. Examples:"
   echo "  mcp-call kubernetes kubectl_get '{\"resourceType\":\"nodes\"}'"

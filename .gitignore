@@ -7,6 +7,9 @@
 # LiteLLM — real keys must never be pushed (use litellm-config.yaml.example + env / Vault)
 stack/litellm-config.yaml
 
+# Local-only SSH / credential notes (never push)
+**/palo-alto-ssh-credentials.md
+
 # Deployment-specific config — use *.example templates for portable copies
 config/mcporter.json
 config/policies/archivist.preset.yaml

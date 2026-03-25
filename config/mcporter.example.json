@@ -1,0 +1,36 @@
+{
+  "mcpServers": {
+    "kubernetes": {
+      "description": "Kubernetes via mcp-aggregator (streamable HTTP / SSE)",
+      "url": "http://MCP_AGGREGATOR_HOST:8080/kubernetes/mcp"
+    },
+    "argocd": {
+      "description": "Argo CD GitOps",
+      "url": "http://MCP_AGGREGATOR_HOST:8080/argocd/mcp"
+    },
+    "grafana": {
+      "description": "Grafana dashboards / alerts",
+      "url": "http://MCP_AGGREGATOR_HOST:8080/grafana/mcp"
+    },
+    "gitlab": {
+      "description": "GitLab CI/CD + repos",
+      "url": "http://MCP_AGGREGATOR_HOST:8080/gitlab/mcp"
+    },
+    "archivist": {
+      "description": "Archivist-OSS fleet memory (SSE MCP)",
+      "url": "http://ARCHIVIST_HOST:3100/mcp/sse"
+    },
+    "paloalto": {
+      "description": "PAN-OS MCP (aggregator path; match your Ingress — often /panos/mcp)",
+      "url": "http://MCP_AGGREGATOR_HOST:8080/panos/mcp"
+    },
+    "servicenow": {
+      "description": "ServiceNow MCP (aggregator path — often /snow/mcp)",
+      "url": "http://MCP_AGGREGATOR_HOST:8080/snow/mcp"
+    },
+    "brave": {
+      "description": "Brave Search (local MCP server; set BRAVE_API_KEY)",
+      "url": "http://127.0.0.1:8770/mcp"
+    }
+  }
+}

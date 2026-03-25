@@ -1,6 +1,6 @@
 ---
 name: nemoclaw-mcp-fleet
-description: Map MCP server names (kubernetes, argocd, grafana, gitlab, archivist) to roles and config/mcporter.json. Use when wiring mcporter, debugging MCP URLs, or choosing which specialist tool server to use.
+description: Map MCP server names (kubernetes, argocd, grafana, gitlab, archivist, paloalto, servicenow) to roles and config/mcporter.json. Use when wiring mcporter, debugging MCP URLs, or choosing which specialist tool server to use.
 metadata: {"openclaw":{}}
 ---
 
@@ -23,7 +23,8 @@ Connect **mcporter** (and similar MCP clients) to the **HTTP MCP** endpoints dec
    - **grafana** — dashboards, PromQL, alerts (GrafGreg).
    - **gitlab** — projects, MRs, pipelines (GitBob; GitLab API via MCP).
    - **archivist** — fleet long-term memory (all agents, with RBAC).
-   - **paloalto** — Palo Alto PAN-OS management MCP (`mcp-servers/paloalto`; AHEAD demo, `palo-expert`).
+   - **paloalto** — Palo Alto PAN-OS management MCP (`mcp-servers/paloalto`; `palo-expert`). Backend SSE path is **`/mcp/sse`** — aggregator must proxy to it (see `deploy/k8s/mcp-aggregator/README.md`).
+   - **servicenow** — Incidents + change requests (`mcp-servers/servicenow`; Chief / change workflows). Same **`/mcp/sse`** pattern; deploy with `deploy/k8s/servicenow-mcp/`.
    - **brave** — Brave Search (`mcp-servers/brave-search`, `brave_web_search`, `BRAVE_API_KEY`, `http://127.0.0.1:8770/mcp`).
 3. **Transport:** MCP endpoints use **JSON-RPC over HTTP POST** (streamable HTTP). Do NOT use GET requests — they return 404.
 4. **Calling MCP tools from OpenClaw:** Use the `mcp-call` helper script via `exec`:

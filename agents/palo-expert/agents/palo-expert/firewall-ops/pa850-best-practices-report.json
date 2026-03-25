@@ -1,0 +1,6 @@
+{
+  "agent_id": "palo-expert",
+  "namespace": "firewall-ops",
+  "text": "Best-practices report for PA-850 firewall (192.168.11.16, PAN-OS 10.2.3)",
+  "tags": ["best-practices", "report", "compliance", "live-pa850"]
+}

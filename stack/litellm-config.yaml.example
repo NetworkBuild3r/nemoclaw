@@ -25,9 +25,25 @@ model_list:
     litellm_params:
       <<: *bedrock_claude3_haiku
       model: bedrock/us.anthropic.claude-opus-4-6-v1
-  - model_name: nvidia/llama-3.3-nemotron-super-49b-v1
+  # NIM ids aligned with NemoClaw reference (integrate.api.nvidia.com)
+  - model_name: nvidia/nemotron-3-super-120b-a12b
     litellm_params:
-      model: openai/nvidia/llama-3.3-nemotron-super-49b-v1
+      model: openai/nvidia/nemotron-3-super-120b-a12b
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: os.environ/NVIDIA_API_KEY
+  - model_name: nvidia/llama-3.1-nemotron-ultra-253b-v1
+    litellm_params:
+      model: openai/nvidia/llama-3.1-nemotron-ultra-253b-v1
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: os.environ/NVIDIA_API_KEY
+  - model_name: nvidia/llama-3.3-nemotron-super-49b-v1.5
+    litellm_params:
+      model: openai/nvidia/llama-3.3-nemotron-super-49b-v1.5
+      api_base: https://integrate.api.nvidia.com/v1
+      api_key: os.environ/NVIDIA_API_KEY
+  - model_name: nvidia/nemotron-3-nano-30b-a3b
+    litellm_params:
+      model: openai/nvidia/nemotron-3-nano-30b-a3b
       api_base: https://integrate.api.nvidia.com/v1
       api_key: os.environ/NVIDIA_API_KEY
   - model_name: nvidia/nemotron-mini-4b-instruct

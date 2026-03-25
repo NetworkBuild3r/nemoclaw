@@ -40,6 +40,10 @@ See [`../stack/README.md`](../stack/README.md) for LiteLLM + env file notes.
 | `.openclaw/` | OpenClaw state (gitignored; `~/.openclaw` may symlink here) |
 | `.config/openclaw/` | `vault.env` + generated `aws-bedrock.env` (gitignored) |
 
+### MCP URLs (`mcporter.json`)
+
+Copy [`config/mcporter.example.json`](../config/mcporter.example.json) to **`config/mcporter.json`** (gitignored) and set aggregator, Archivist, and optional Brave Search URLs for your environment.
+
 ---
 
 ## Symlinks (optional, on your ROC host)
