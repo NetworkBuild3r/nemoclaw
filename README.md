@@ -1,86 +1,142 @@
-# NemoClaw challenge — Enterprise DevOps agent fleet + shared memory
+<div align="center">
 
-**AHEAD × NVIDIA NemoClaw (deadline Mar 31, 2026)** — secure, always-on **OpenClaw** agents (Telegram) with **policy guardrails**, **LiteLLM → Bedrock**, and **NVIDIA** inference/embeddings where configured.
+<img src="assets/memoryops-hero.png" alt="MemoryOps Hero Image" width="800" style="border-radius: 12px; margin-bottom: 20px;" />
 
-Use **`/home/bnelson/nemoclaw`** (this repo) as the single place for NemoClaw / OpenClaw / **Archivist** / LiteLLM operations.
+# MemoryOps: The Autonomous GitOps Fleet
+**Secure by Design. Powered by Untouchable Memory.**
+
+[![AHEAD × NVIDIA NemoClaw Challenge](https://img.shields.io/badge/Challenge-AHEAD_%C2%D7_NVIDIA-black?style=for-the-badge&logo=nvidia)](https://github.com/NVIDIA/NemoClaw)
+[![NemoClaw Powered](https://img.shields.io/badge/Powered_by-NemoClaw-76B900?style=for-the-badge&logo=nvidia)](https://github.com/NVIDIA/NemoClaw)
+[![OpenClaw Agents](https://img.shields.io/badge/Agents-OpenClaw-blue?style=for-the-badge)](https://github.com/NVIDIA/NemoClaw)
+
+<br/>
+
+*Built for enterprise leaders who demand autonomous scale without compromising security.*
+
+</div>
 
 ---
 
-## Archivist — the “memory” differentiator
+## 🚀 The Executive Summary
 
-This demo’s key integration is **Archivist**: recursive long-term memory, Qdrant + SQLite graph, **MCP** tools, **RBAC** namespaces, and fleet-wide search.
+Enterprise IT is at a breaking point. Deploying a single, "God-mode" AI agent to manage operations is a security nightmare: it requires sprawling API access, loses critical context the moment it crashes, and presents a massive risk for credential exfiltration.
 
-| Read this | Why |
-|-----------|-----|
-| **[`archivist-oss/README.md`](archivist-oss/README.md)** | Full product explanation: features, architecture diagram, quick start, MCP URL, health checks. **Start here** to understand what Archivist does. |
-| **[`docs/ARCHIVIST.md`](docs/ARCHIVIST.md)** | How Archivist is wired into *this* repo (compose overrides, agents, upstream lineage). |
+**MemoryOps** is a paradigm shift. Built on the **NVIDIA NemoClaw** platform, it introduces a fully autonomous, logically segmented GitOps fleet. We guarantee:
+1. **Zero-Leakage Architecture:** Agents are sandboxed and never hold API keys.
+2. **Untouchable Long-Term Memory:** Corporate knowledge is permanently retained across sessions, crashes, and team handoffs.
+3. **Reduced MTTR (Mean Time To Resolution):** Specialized AI agents collaborate seamlessly across GitLab, Kubernetes, ServiceNow, and Palo Alto Networks.
 
-**Docker (from repo):**
+> *"We aren't just automating terminal commands; we are building a secure, resilient AI workforce that retains institutional knowledge forever."*
 
-```bash
-cd archivist-oss
-docker compose -f docker-compose.yml -f ../stack/docker-compose.override.yml --env-file ../stack/.env up -d
+---
+
+## 🧠 The Differentiator: Untouchable Multi-Team Memory
+
+The defining feature of our GitOps fleet is **Archivist**—a persistent, vector-backed (Qdrant + SQLite) memory system. 
+
+When legacy AI agents communicate, context dies with the session. In our architecture:
+* **Persistent Receipts:** Agents explicitly store deployment logs, security audits, and infrastructure state directly into Archivist.
+* **RBAC Namespaces:** Memory is strictly partitioned. The `pipeline` namespace holds CI/CD data, `deployer` holds cluster state, and `secops` holds firewall audits.
+* **Cross-Team Synthesis:** The *Chief* orchestrator can query across all namespaces to instantly synthesize a complete picture of the enterprise—without ever interrupting the specialist execution agents. 
+
+Nobody can "touch" or accidentally erase this corporate memory. It survives agent restarts, session drops, and complete system rebuilds.
+
+---
+
+## 🛡️ Zero-Leakage Architecture: NemoClaw + MCP
+
+Security is not an afterthought; it is the foundation. We guarantee that **no agent ever holds an API key or secret token.**
+
+1. **NemoClaw Sandboxing:** Every agent runs inside a strict, policy-controlled OpenShell sandbox. Egress is explicitly whitelisted. An agent cannot simply `curl` an external server to exfiltrate data.
+2. **MCP as the Security Boundary:** We use the **Model Context Protocol (MCP)** to mathematically isolate sensitive operations:
+    * Agents do not hold ServiceNow API keys; they talk to the ServiceNow MCP server.
+    * Agents do not hold Palo Alto firewall credentials; they query the Palo Alto MCP server.
+    * **The CTO Guarantee:** Even if an agent goes rogue or suffers a prompt injection attack, **there are no keys to leak.** 
+
+---
+
+## 👥 The Fleet: Segregation of Duties
+
+Just like your engineering organization, we divide tasks into highly specialized, least-privilege personas:
+
+### 👔 The Coordinator
+* **Chief:** The orchestrator. Takes natural language requests, formulates a safe execution plan, and stores task briefs in Archivist. The Chief *never* executes cluster or Git commands directly—enforcing a strict blast radius.
+
+### ⚙️ The Execution Fleet
+* **GitBob:** The GitOps Specialist. Manages repositories, opens Merge Requests, and triggers CI pipelines via the GitLab MCP.
+* **KubeKate & Argo:** The Deployment Specialists. KubeKate interacts with the Kubernetes MCP for raw cluster management, while Argo handles continuous deployment syncs.
+* **Palo Expert:** The SecOps Auditor. Validates firewall configurations via the Palo Alto MCP, ensuring every deployment complies with enterprise security baselines.
+
+### 🏗️ The Autonomous Builders
+* **Skill-Builder & MCP-Builder:** A fleet that writes its own tools. Dedicated agents tasked solely with writing new OpenClaw skills or building new Python MCP servers, ensuring the core team remains focused on production.
+
+---
+
+## 🏗️ Architecture Flow
+
+```mermaid
+flowchart TD
+    subgraph NemoClaw["NVIDIA NemoClaw Sandboxes (Zero Keys)"]
+        Gateway["OpenShell Gateway & Policy Engine"]
+        
+        subgraph Fleet["Agent Fleet (OpenClaw)"]
+            Chief["Chief<br/>(Coordination)"]
+            GitBob["GitBob<br/>(GitOps)"]
+            KubeKate["KubeKate<br/>(K8s/Argo)"]
+            PaloExpert["Palo Expert<br/>(SecOps)"]
+            Builders["Builders<br/>(Skills/MCPs)"]
+        end
+    end
+
+    subgraph Memory["Untouchable Memory"]
+        Archivist[("Archivist (Qdrant + SQLite)<br/>RBAC Namespaces")]
+    end
+
+    subgraph External["Isolated MCP Servers (Hold the Keys)"]
+        PaloAlto["Palo Alto Networks MCP"]
+        ServiceNow["ServiceNow MCP"]
+        GitLab["GitLab MCP"]
+    end
+
+    Gateway -->|"Routes Telegram"| Chief
+    Chief -.->|"Delegates Task"| Fleet
+    
+    Fleet <-->|"Reads/Writes Context"| Archivist
+    
+    GitBob -->|"Triggers Pipelines"| GitLab
+    PaloExpert -->|"Audits Config"| PaloAlto
+    Chief -->|"Updates Tickets"| ServiceNow
+
+    %% Styling
+    classDef memory fill:#f9f9f9,stroke:#333,stroke-width:2px;
+    class Archivist memory;
+    classDef mcp fill:#e1f5fe,stroke:#333,stroke-width:2px;
+    class PaloAlto,ServiceNow,GitLab mcp;
 ```
 
-See [`stack/README.md`](stack/README.md) for LiteLLM + env file notes.
+---
+
+## ✅ Challenge Checklist
+
+Built for the **AHEAD × NVIDIA NemoClaw Challenge**, hitting all key requirements:
+
+- [x] **NemoClaw-Powered:** Runs on NVIDIA NemoClaw. Agents execute within OpenShell sandboxes using local LiteLLM and NVIDIA NIM (`nvidia/nemotron-3-super-120b-a12b`).
+- [x] **Enterprise Use Case:** Dedicated to **DevOps & SecOps**. Tackles complex workflows—task delegation, infrastructure-as-code, and firewall auditing—proving AI can scale enterprise operations safely.
+- [x] **Integrate the Ecosystem & Bonus Points:** 
+  - **Palo Alto Networks:** Custom MCP server to read PAN-OS firewalls, enabling SecOps audits without agent credential leakage.
+  - **ServiceNow:** Custom MCP server for ITSM ticketing and tracking.
+  - **Archivist:** Shared, persistent vector-memory bridging the entire fleet.
 
 ---
 
-## Repo layout
+## 🚀 Technical Deep Dive
 
-| Path | Purpose |
-|------|---------|
-| `archivist-oss/` | **Archivist + Qdrant** service (Python MCP server) — **included in full for GitHub** |
-| `agents/` | GitOps agent workspaces (Chief, GitBob, Argo, Kate, Greg) |
-| `openclaw-skills/` | **OpenClaw runtime** AgentSkills (`SKILL.md` trees); loaded via `skills.load.extraDirs` in `openclaw.json`. See skill **`nemoclaw-skill-builder`** for how to add skills. |
-| `.cursor/skills/` | Symlinks into `openclaw-skills/` for **Cursor** only (same content) |
-| `stack/` | LiteLLM config (example + local gitignored), `docker-compose.override.yml`, stack `.env` |
-| `config/`, `policies/`, `prompts/`, `sample-memories/` | Challenge config and seed memories |
-| `docs/` | Vault docs, submission checklist, Archivist bridge doc |
-| `vendor/NemoClaw/` | **Not in git** (large) — `git clone https://github.com/NVIDIA/NemoClaw` beside this repo |
-| `scripts/` | Vault → disk sync for Telegram tokens and AWS Bedrock env |
-| `.openclaw/` | OpenClaw state (gitignored; `~/.openclaw` may symlink here) |
-| `.config/openclaw/` | `vault.env` + generated `aws-bedrock.env` (gitignored) |
+Looking for the dense technical instructions on how to start the repository, configure Docker, or setup Vault? 
+
+👉 **[See the Setup & Repository Guide (`docs/SETUP.md`)](docs/SETUP.md)**
 
 ---
 
-## Symlinks (optional, on your ROC host)
-
-| Path | → |
-|------|----|
-| `~/.openclaw` | `nemoclaw/.openclaw/` |
-| `~/.config/openclaw` | `nemoclaw/.config/openclaw/` |
-| `~/nemoclaw-challenge` | `nemoclaw/` |
-| `~/docs/reference` | `nemoclaw/docs/reference/` |
-
----
-
-## GitHub / submission
-
-- **[`docs/GITHUB-SUBMISSION.md`](docs/GITHUB-SUBMISSION.md)** — checklist (slide, <5 min video, public repo, no secrets).
-
-### Demo recording
-
-| Shot | What to show | Source |
-|------|-------------|--------|
-| 1. NemoClaw sandbox | `nemoclaw openclaw status` — policies, model, sandbox phase | Terminal |
-| 2. Blocked egress | `curl` to a forbidden host → OpenShell deny in logs | Terminal + `openshell` |
-| 3. Task delegation | `ahead-chief` stores task brief in Archivist `tasks` | `mcp-call archivist archivist_store` |
-| 4. Build + push | `docker build` / `docker push` paloalto-mcp image | Terminal |
-| 5. Deploy + smoke | `kubectl apply` → `mcp-call paloalto panos_show_system_info` | Terminal + MCP |
-| 6. Archivist proof | `mcp-builder` stores evidence in `mcp-engineering` | `mcp-call archivist` |
-| 7. Firewall audit | `palo-expert` calls PAN-OS tools, stores in `firewall-ops` | `mcp-call paloalto` + Archivist |
-| 8. Cross-team synthesis | `ahead-chief` → `archivist_insights` merges all namespaces | `mcp-call archivist` |
-| 9. Chief spawn (optional) | Chief via Telegram → `sessions_spawn` → skill-builder | Telegram + gateway log |
-
-See [`docs/AHEAD-DEMO-RUNBOOK.md`](docs/AHEAD-DEMO-RUNBOOK.md) for the full runbook and [`docs/DEMO-SKILL-BUILD-VIDEO.md`](docs/DEMO-SKILL-BUILD-VIDEO.md) for the Chief two-turn spawn flow.
-- **Secrets:** never commit `stack/litellm-config.yaml` (use `stack/litellm-config.yaml.example`), `.openclaw/`, or `.config/openclaw/` secrets.
-
-**License:** [`LICENSE`](LICENSE) (Apache-2.0); components like `archivist-oss/` retain their own `LICENSE` where present.
-
----
-
-## Upstream
-
-- **NemoClaw:** [github.com/NVIDIA/NemoClaw](https://github.com/NVIDIA/NemoClaw)
-- **Archivist (lineage):** [github.com/NetworkBuild3r/archivist-oss](https://github.com/NetworkBuild3r/archivist-oss)
+<div align="center">
+  <i>Engineered for the AHEAD × NVIDIA NemoClaw Challenge</i>
+</div>
