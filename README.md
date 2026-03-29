@@ -3,7 +3,7 @@
 <img src="assets/memoryops-hero.png" alt="MemoryOps Hero Image" width="800" style="border-radius: 12px; margin-bottom: 20px;" />
 
 # MemoryOps: The Autonomous GitOps Fleet
-**Secure by Design. Powered by Untouchable Memory.**
+**Security-first by design. Shared memory with RBAC. MCP as the integration boundary.**
 
 [![AHEAD × NVIDIA NemoClaw Challenge](https://img.shields.io/badge/Challenge-AHEAD_%C2%D7_NVIDIA-black?style=for-the-badge&logo=nvidia)](https://github.com/NVIDIA/NemoClaw)
 [![NemoClaw Powered](https://img.shields.io/badge/Powered_by-NemoClaw-76B900?style=for-the-badge&logo=nvidia)](https://github.com/NVIDIA/NemoClaw)
@@ -11,22 +11,31 @@
 
 <br/>
 
-*Built for enterprise leaders who demand autonomous scale without compromising security.*
+*Security-first architecture for a multi-agent GitOps fleet — scale without treating API keys as chat fuel.*
+
+**Public repo:** [github.com/NetworkBuild3r/nemoclaw](https://github.com/NetworkBuild3r/nemoclaw) · Platform: [NVIDIA NemoClaw](https://github.com/NVIDIA/NemoClaw)
 
 </div>
 
 ---
 
-## 🚀 The Executive Summary
+## 🚀 Security first, then capability
 
-Enterprise IT is at a breaking point. Deploying a single, "God-mode" AI agent to manage operations is a security nightmare: it requires sprawling API access, loses critical context the moment it crashes, and presents a massive risk for credential exfiltration.
+A single “do everything” agent with a backpack full of API keys fails security review before it ships. **MemoryOps** inverts that: we designed **trust boundaries**, **least privilege**, and **where secrets may live** first—then layered **Git**, **Argo CD**, **ServiceNow change control**, **Kubernetes operations**, and **Palo Alto** visibility on top of **NemoClaw** + **OpenClaw**.
 
-**MemoryOps** is a paradigm shift. Built on the **NVIDIA NemoClaw** platform, it introduces a fully autonomous, logically segmented GitOps fleet. We guarantee:
-1. **Zero-Leakage Architecture:** Agents are sandboxed and never hold API keys.
-2. **Untouchable Long-Term Memory:** Corporate knowledge is permanently retained across sessions, crashes, and team handoffs.
-3. **Reduced MTTR (Mean Time To Resolution):** Specialized AI agents collaborate seamlessly across GitLab, Kubernetes, ServiceNow, and Palo Alto Networks.
+| Design decision | Security outcome |
+|-----------------|------------------|
+| **Chief + specialist fleet** | One human entry point; **delegation** keeps blast radius small—GitOps and SecOps tools run in the right **agent identity**, not everywhere. |
+| **MCP-only integrations** | External systems are **named tools**, not arbitrary HTTP from the model. Credentials stay on **MCP servers** behind a **cluster aggregator**, not in prompts. |
+| **Archivist + RBAC namespaces** | Shared **long-term memory** with **partitioned read/write**—not one flat blob any session can overwrite. |
+| **HashiCorp Vault** | **Source of truth** for secrets that sync into **trusted runtime** (gateway, workloads). See [`docs/vault-project-env.md`](docs/vault-project-env.md) and [`docs/vault-telegram-bots.md`](docs/vault-telegram-bots.md). |
+| **Policies + sandbox egress** | NemoClaw / OpenShell **allow-lists** align network reality with what `mcporter` may call (e.g. aggregator + Archivist). |
 
-> *"We aren't just automating terminal commands; we are building a secure, resilient AI workforce that retains institutional knowledge forever."*
+**Demo-friendly outcomes:** **GitOps** through Git + **Argo CD**, **governed change** in **ServiceNow**, **firewall posture** via **PAN-OS MCP**—without pasting tokens into chat.
+
+Narrative for slide / judges: [`docs/GITHUB-SUBMISSION.md`](docs/GITHUB-SUBMISSION.md).
+
+> *We did not “add security later.” We picked a shape where the **safe path is the default path**.*
 
 ### Operating philosophy (Tesla / SpaceX style)
 
@@ -43,28 +52,30 @@ Every agent follows the same **five-step** discipline in [`agents/ENGINEERING_AL
 
 ---
 
-## 🧠 The Differentiator: Untouchable Multi-Team Memory
+## 🧠 Shared memory with RBAC (Archivist)
 
-The defining feature of our GitOps fleet is **Archivist**—a persistent, vector-backed (Qdrant + SQLite) memory system. 
+**Archivist-OSS** is the fleet’s **durable system of record** for coordination—not a chat transcript. Vector + graph storage (Qdrant + SQLite) backs **search**, **recall**, and **audit-style receipts**.
 
-When legacy AI agents communicate, context dies with the session. In our architecture:
-* **Persistent Receipts:** Agents explicitly store deployment logs, security audits, and infrastructure state directly into Archivist.
-* **RBAC Namespaces:** Memory is strictly partitioned. The `pipeline` namespace holds CI/CD data, `deployer` holds cluster state, and `secops` holds firewall audits.
-* **Cross-Team Synthesis:** The *Chief* orchestrator can query across all namespaces to instantly synthesize a complete picture of the enterprise—without ever interrupting the specialist execution agents. 
+* **Explicit writes** — Specialists store outcomes (deployments, MRs, audits, CHG numbers) in the right **namespace** with the right **`agent_id`**.
+* **Partitioned by role** — e.g. `pipeline` for CI/CD, `deployer` for cluster work, `change-control` for ServiceNow, `firewall-ops` for PAN-OS analysis—so memory stays **governed**, not a single shared scratchpad.
+* **Chief synthesizes** — The orchestrator can read across namespaces for a unified answer **without** becoming the execution path for every MCP tool.
 
-Nobody can "touch" or accidentally erase this corporate memory. It survives agent restarts, session drops, and complete system rebuilds.
+Details: [`archivist-oss/README.md`](archivist-oss/README.md), [`docs/ARCHIVIST.md`](docs/ARCHIVIST.md).
 
 ---
 
-## 🛡️ Zero-Leakage Architecture: NemoClaw + MCP
+## 🛡️ Trust zones: gateway, agents, MCP, Vault
 
-Security is not an afterthought; it is the foundation. We guarantee that **no agent ever holds an API key or secret token.**
+**Security property we optimize for:** integration **passwords and API keys are not part of agent-visible chat context**. Specialists call **tools**; **MCP servers** (and the cluster around them) own the **authenticated** conversation with GitLab, Kubernetes, Argo CD, Grafana, ServiceNow, and PAN-OS.
 
-1. **NemoClaw Sandboxing:** Every agent runs inside a strict, policy-controlled OpenShell sandbox. Egress is explicitly whitelisted. An agent cannot simply `curl` an external server to exfiltrate data.
-2. **MCP as the Security Boundary:** We use the **Model Context Protocol (MCP)** to mathematically isolate sensitive operations:
-    * Agents do not hold ServiceNow API keys; **Birdman** (`snow-birdman`) talks to the ServiceNow MCP server for incidents and **change requests** — Chief routes ITSM work there, not into raw credentials.
-    * Agents do not hold Palo Alto firewall credentials; they query the Palo Alto MCP server.
-    * **The CTO Guarantee:** Even if an agent goes rogue or suffers a prompt injection attack, **there are no keys to leak.** 
+1. **Agents (sandboxes)** — NemoClaw / OpenShell **policies** and **egress allow-lists** match how we actually integrate: MCP endpoints and Archivist, not “any HTTPS.”
+2. **OpenClaw gateway (trusted runtime)** — Loads **Telegram / channel** and **model provider** material from **Vault-backed files** on the host—**outside** the specialist’s workspace files. Agents are not asked to edit `vault.env`; they orchestrate **through** the gateway + tools.
+3. **MCP aggregator (Kubernetes)** — Reference routing and manifests live under [`deploy/k8s/mcp-aggregator/README.md`](deploy/k8s/mcp-aggregator/README.md). One **ingress pattern** to many backends; **NetworkPolicy**-style separation is part of how we think about production (see diagram below).
+4. **Vault → runtime** — Project and bot secrets flow via documented sync scripts (`scripts/vault-*.sh`); **never** commit real `mcporter.json` or LiteLLM keys—use [`config/mcporter.json.example`](config/mcporter.json.example) and [`stack/litellm-config.yaml.example`](stack/litellm-config.yaml.example).
+
+**ServiceNow** — **Birdman** (`snow-birdman`) uses the **`servicenow`** MCP for incidents and **change requests**. **Palo Alto** — **Palo Expert** uses the **`paloalto`** MCP. **GitOps** — **Bob** / **Kate** / **Greg** use **GitLab**, **kubernetes**, **argocd**, **grafana** MCPs respectively. **Durable logic** (clients, validation, retries) lives in those servers—so the model spends tokens on **decisions**, not retyping `curl` one-liners.
+
+**Honest edge case:** if a session is fully compromised, **prompt injection is still a risk class**—we reduce **credential exposure** and **blast radius**; we do not claim magic. Rotate in **Vault**; revoke in the IdP; MCP servers are the choke point.
 
 ---
 
@@ -156,14 +167,12 @@ flowchart TD
 
 ## ✅ Challenge Checklist
 
-Built for the **AHEAD × NVIDIA NemoClaw Challenge**, hitting all key requirements:
+Built for the **AHEAD × NVIDIA NemoClaw Challenge** — **security architecture** and **enterprise workflow** in the same repo:
 
-- [x] **NemoClaw-Powered:** Runs on NVIDIA NemoClaw. Agents execute within OpenShell sandboxes using local LiteLLM and NVIDIA NIM (`nvidia/nemotron-3-super-120b-a12b`).
-- [x] **Enterprise Use Case:** Dedicated to **DevOps & SecOps**. Tackles complex workflows—task delegation, infrastructure-as-code, and firewall auditing—proving AI can scale enterprise operations safely.
-- [x] **Integrate the Ecosystem & Bonus Points:** 
-  - **Palo Alto Networks:** Custom MCP server to read PAN-OS firewalls, enabling SecOps audits without agent credential leakage.
-  - **ServiceNow:** Custom MCP server for ITSM ticketing and tracking.
-  - **Archivist:** Shared, persistent vector-memory bridging the entire fleet.
+- [x] **Security-first posture:** Sandboxed agents, **MCP-only** integration edge, **Vault**-backed secrets, **K8s MCP aggregator** pattern (see [`deploy/k8s/mcp-aggregator/README.md`](deploy/k8s/mcp-aggregator/README.md)).
+- [x] **NemoClaw-powered:** OpenShell policies + NVIDIA NIM / LiteLLM routing (`nvidia/nemotron-3-super-120b-a12b` and documented alternates).
+- [x] **Enterprise use case:** **GitOps** (Git + **Argo CD**), **ITSM / change** (**ServiceNow** MCP), **SecOps** (**Palo Alto** MCP), **observability** (Grafana MCP)—each with **least-privilege** specialist agents.
+- [x] **Archivist:** Fleet-wide memory with **RBAC namespaces**—not a single unpartitioned knowledge dump.
 
 ---
 
