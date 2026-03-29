@@ -21,7 +21,7 @@
 
 ## 🚀 Security first, then capability
 
-A single “do everything” agent with a backpack full of API keys fails security review before it ships. **MemoryOps** inverts that: we designed **trust boundaries**, **least privilege**, and **where secrets may live** first—then layered **Git**, **Argo CD**, **ServiceNow change control**, **Kubernetes operations**, and **Palo Alto** visibility on top of **NemoClaw** + **OpenClaw**.
+A single “do everything” agent with a backpack full of API keys fails security review before it ships. **MemoryOps** inverts that: we designed **trust boundaries**, **least privilege**, and **where secrets may live** first—then layered **Git**, **Argo CD**, **Kubernetes operations**, **observability**, and two specialist lanes that enterprises actually audit: **ITSM / change control** (**Birdman**, `snow-birdman`) and **firewall / SecOps** (**Palo Expert**, `palo-expert` — team codename **Pablo**) on top of **NemoClaw** + **OpenClaw**.
 
 | Design decision | Security outcome |
 |-----------------|------------------|
@@ -31,7 +31,7 @@ A single “do everything” agent with a backpack full of API keys fails securi
 | **HashiCorp Vault** | **Source of truth** for secrets that sync into **trusted runtime** (gateway, workloads). See [`docs/vault-project-env.md`](docs/vault-project-env.md) and [`docs/vault-telegram-bots.md`](docs/vault-telegram-bots.md). |
 | **Policies + sandbox egress** | NemoClaw / OpenShell **allow-lists** align network reality with what `mcporter` may call (e.g. aggregator + Archivist). |
 
-**Demo-friendly outcomes:** **GitOps** through Git + **Argo CD**, **governed change** in **ServiceNow**, **firewall posture** via **PAN-OS MCP**—without pasting tokens into chat.
+**Demo-friendly outcomes:** **GitOps** through Git + **Argo CD**; **Birdman** files **incidents** and **change requests** in **ServiceNow** so releases have an ITSM trail; **Pablo / Palo Expert** pulls **live PAN-OS** state through the **Palo Alto MCP** for audits and troubleshooting—**no tokens in chat**, only tool calls and receipts in Archivist.
 
 Narrative for slide / judges: [`docs/GITHUB-SUBMISSION.md`](docs/GITHUB-SUBMISSION.md).
 
@@ -48,7 +48,17 @@ Every agent follows the same **five-step** discipline in [`agents/ENGINEERING_AL
 | Squad | Agents | Notes |
 |-------|--------|--------|
 | **Delivery** | Bob (`gitbob`), Kate (`kubekate`), Greg (`grafgreg`) | Kate uses **`kubernetes`** + **`argocd`** MCPs (no separate `argo` agent). |
+| **ITSM / change** | **Birdman** (`snow-birdman`) | **`servicenow`** MCP — incidents + **CHG** / CAB-friendly change records. Archivist namespace **`change-control`**. Chief delegates SNOW execution here. |
+| **SecOps / firewall** | **Palo Expert** (`palo-expert`, codename **Pablo**) | **`paloalto`** MCP — PAN-OS reads, audits, troubleshooting. Archivist **`firewall-ops`**. Not Kubernetes; never route PAN-OS work to Kate. |
 | **Factory** | Forge (`mcp-builder`), Quill (`skill-builder`) | **`skill-builder`** primary model **`openclaw-opus-46`**; research + repo skills merged here. |
+
+### Birdman & Pablo in the story
+
+**Birdman** is the **governance face** of the fleet: when GitOps or infra moves need a **change record**, CAB language, or incident thread, Chief hands off to **`snow-birdman`**. Same release narrative can mention both **Argo CD sync** and **CHG1234567**—Birdman owns the **ServiceNow** side so compliance and delivery stay linked.
+
+**Pablo** (**Palo Expert**, `palo-expert`) is the **ground-truth face** for **network security**: rules, zones, NAT, and posture come from **PAN-OS via MCP**, not from guesswork in chat. Audits land in **`firewall-ops`** so SecOps receipts sit beside **`change-control`** receipts—**different MCPs, different namespaces**, one Chief thread.
+
+Workspaces: [`agents/snow-birdman/`](agents/snow-birdman/) · [`agents/palo-expert/`](agents/palo-expert/)
 
 ---
 
@@ -89,8 +99,8 @@ Just like your engineering organization, we divide tasks into highly specialized
 ### ⚙️ The Execution Fleet
 * **Bob (GitBob):** The Git pipeline specialist — repositories, merge requests, and CI via the GitLab MCP (`gitbob`).
 * **Kate (KubeKate):** **Kubernetes and Argo CD** — one specialist uses both the **`kubernetes`** and **`argocd`** MCPs for live cluster ops and GitOps sync/health/rollback (`kubekate`).
-* **Palo Expert:** The SecOps Auditor. Validates firewall configurations via the Palo Alto MCP, ensuring every deployment complies with enterprise security baselines.
-* **Birdman (`snow-birdman`):** The ServiceNow / **change-control** specialist. Owns the **`servicenow`** MCP — incidents and **change requests** (CAB-track) so GitOps moves leave an ITSM trail (*Phoenix Project* vibes: governance without gridlock). Nothing credentialed lives in the agent — only in the MCP server.
+* **Birdman (`snow-birdman`):** The **ServiceNow / change-control** specialist. **Incidents**, **change requests**, CAB-friendly hygiene — so every serious GitOps move can cite an ITSM record. Chief coordinates; Birdman runs **`servicenow`** MCP tools and stores receipts in **`change-control`**.
+* **Palo Expert (`palo-expert`, “Pablo”):** The **PAN-OS / firewall** specialist. Reads live firewall state through the **`paloalto`** MCP (rules, zones, NAT, posture), writes audits to **`firewall-ops`**. **Not** a Kubernetes agent — keeps network truth separate from cluster APIs.
 
 ### 🏗️ The Autonomous Builders (factory)
 * **Forge (`mcp-builder`)** ships MCP server images and k8s deploys. **Quill (`skill-builder`)** researches, writes playbooks, and authors repo **`openclaw-skills/`** (primary model **`openclaw-opus-46`**). Two factory roles only — no separate research-only agent.
@@ -101,7 +111,7 @@ Just like your engineering organization, we divide tasks into highly specialized
 
 **Editable diagram (judges / slide):** [`docs/diagrams/nemoclaw-fleet-architecture.drawio`](docs/diagrams/nemoclaw-fleet-architecture.drawio) — Vault, gateway, agent fleet, Archivist, Kubernetes + Argo CD + MCP aggregator + MCP backends. Open in [diagrams.net](https://app.diagrams.net).
 
-Chief is the **single orchestrator**: the gateway routes the human to Chief, and **Chief delegates** every execution path to the right specialist (Bob, Kate, Greg, Palo Expert, **Birdman** for ServiceNow change control, factory builders). Specialists talk to **MCP servers** (keys live there) and persist **receipts** in Archivist.
+Chief is the **single orchestrator**: the gateway routes the human to Chief, and **Chief delegates** every execution path to the right specialist (Bob, Kate, Greg, **Pablo / Palo Expert** for PAN-OS, **Birdman** for ServiceNow change control, factory builders). Specialists talk to **MCP servers** (keys live there) and persist **receipts** in Archivist.
 
 ```mermaid
 flowchart TD
@@ -113,7 +123,7 @@ flowchart TD
             GitBob["Bob<br/>GitLab / CI"]
             Kate["Kate<br/>K8s + Argo CD"]
             GregNode["Greg<br/>Grafana"]
-            PaloExpert["Palo Expert<br/>PAN-OS / SecOps"]
+            PaloExpert["Pablo / Palo Expert<br/>PAN-OS / SecOps"]
             Birdman["Birdman<br/>ServiceNow / CHG"]
             Builders["Forge + Quill<br/>mcp-builder / skill-builder"]
         end
@@ -171,7 +181,7 @@ Built for the **AHEAD × NVIDIA NemoClaw Challenge** — **security architecture
 
 - [x] **Security-first posture:** Sandboxed agents, **MCP-only** integration edge, **Vault**-backed secrets, **K8s MCP aggregator** pattern (see [`deploy/k8s/mcp-aggregator/README.md`](deploy/k8s/mcp-aggregator/README.md)).
 - [x] **NemoClaw-powered:** OpenShell policies + NVIDIA NIM / LiteLLM routing (`nvidia/nemotron-3-super-120b-a12b` and documented alternates).
-- [x] **Enterprise use case:** **GitOps** (Git + **Argo CD**), **ITSM / change** (**ServiceNow** MCP), **SecOps** (**Palo Alto** MCP), **observability** (Grafana MCP)—each with **least-privilege** specialist agents.
+- [x] **Enterprise use case:** **GitOps** (Git + **Argo CD**), **ITSM / change** (**Birdman** / **`servicenow`** MCP), **SecOps** (**Pablo** / **Palo Expert** / **`paloalto`** MCP), **observability** (Grafana MCP)—each with **least-privilege** specialist agents.
 - [x] **Archivist:** Fleet-wide memory with **RBAC namespaces**—not a single unpartitioned knowledge dump.
 
 ---
