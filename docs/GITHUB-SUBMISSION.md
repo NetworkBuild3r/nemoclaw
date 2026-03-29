@@ -19,12 +19,14 @@ chmod +x scripts/verify-public-push.sh   # once
 ./scripts/verify-public-push.sh
 ```
 
-Fix anything it reports, then commit. **GitHub remote:** your `origin` may still point at a private GitLab repo; add a public remote without removing it, for example:
+Fix anything it reports, then commit. **`origin` is GitHub only** (no GitLab push target for this monorepo):
 
 ```bash
-git remote add github https://github.com/YOUR_USER/YOUR_FORK.git
-git push -u github main
+git remote -v   # expect: origin  git@github.com:NetworkBuild3r/nemoclaw-challenge.git
+git push -u origin main
 ```
+
+If the repo name on GitHub differs, run: `git remote set-url origin git@github.com:YOUR_ORG/YOUR_REPO.git`
 
 ## Repo readiness (maintain this before `git push`)
 
