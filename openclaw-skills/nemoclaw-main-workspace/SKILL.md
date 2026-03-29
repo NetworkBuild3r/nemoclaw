@@ -16,7 +16,7 @@ When this **default workspace** is active (no `agents/<role>` tree), still align
 ## Instructions
 
 1. **Engineering algorithm:** Same as the fleet — apply `agents/ENGINEERING_ALGORITHM.md` in order (requirements → delete waste → optimize → accelerate → automate).
-2. **Prefer the repo root** as the working tree: `/home/bnelson/nemoclaw` (or your clone path) so shared skills and `config/mcporter.json` resolve predictably.
+2. **Prefer the repo root** as the working tree: `/home/bnelson/nemoclaw` (or your clone path) so shared skills and `config/mcporter.json` resolve predictably. **GitHub:** [github.com/NetworkBuild3r/nemoclaw](https://github.com/NetworkBuild3r/nemoclaw).
 3. **Routing:** For GitOps-style asks, read `nemoclaw-agent-fleet` and delegate conceptually to the right specialist persona — or open that agent’s folder as workspace for their dedicated skill.
 4. **Cross-cutting:** Use `nemoclaw-overview`, `archivist-mcp`, `nemoclaw-mcp-fleet`, `nemoclaw-openclaw-telegram` as needed.
 

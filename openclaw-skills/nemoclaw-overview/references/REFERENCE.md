@@ -7,6 +7,12 @@ cd archivist-oss
 docker compose -f docker-compose.yml -f ../stack/docker-compose.override.yml --env-file ../stack/.env up -d
 ```
 
+## Public GitHub
+
+| Item | URL |
+|------|-----|
+| This monorepo (clone / judges) | [github.com/NetworkBuild3r/nemoclaw](https://github.com/NetworkBuild3r/nemoclaw) |
+
 ## Docs index
 
 | Topic | Path |

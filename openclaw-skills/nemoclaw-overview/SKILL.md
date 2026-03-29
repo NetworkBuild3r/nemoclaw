@@ -16,7 +16,7 @@ Give agents and humans a reliable mental map of the **nemoclaw** repository: wha
 
 ## Instructions
 
-1. **Single home directory:** Treat the repository root as the canonical place for NemoClaw / OpenClaw / Archivist / LiteLLM operations; start from `README.md` at the repo root.
+1. **Single home directory:** Treat the repository root as the canonical place for NemoClaw / OpenClaw / Archivist / LiteLLM operations; start from `README.md` at the repo root. **Public source of truth on GitHub:** [github.com/NetworkBuild3r/nemoclaw](https://github.com/NetworkBuild3r/nemoclaw) (challenge / MemoryOps monorepo — not the same as separate MCP-only repos on GitLab).
 2. **Archivist (memory):** Implementation and upstream-style docs live in `archivist-oss/`. Bridge doc: `docs/ARCHIVIST.md`. Start with `archivist-oss/README.md` for architecture and MCP URL patterns.
 3. **Runtime stack:** LiteLLM + compose overrides are under `stack/` (`stack/README.md`, `stack/docker-compose.override.yml`). Real `litellm-config.yaml` is gitignored; use `stack/litellm-config.yaml.example`.
 4. **Agents:** Per-agent workspaces under `agents/` (e.g. `chief`, `github-bob`, `k8s-kate`, `grafana-greg`, `skill-builder`, `mcp-builder`) with `AGENTS.md`, `SOUL.md`, and optional `TOOLS.md`. See **`docs/FLEET-ROSTER.md`** — Kate (`k8s-kate`) owns both **kubernetes** and **argocd** MCPs; there is no separate `argo` workspace.

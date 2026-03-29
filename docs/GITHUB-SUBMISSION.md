@@ -22,11 +22,13 @@ chmod +x scripts/verify-public-push.sh   # once
 Fix anything it reports, then commit. **`origin` is GitHub only** (no GitLab push target for this monorepo):
 
 ```bash
-git remote -v   # expect: origin  git@github.com:NetworkBuild3r/nemoclaw-challenge.git
+git remote -v   # expect: origin  git@github.com:NetworkBuild3r/nemoclaw.git
 git push -u origin main
 ```
 
-If the repo name on GitHub differs, run: `git remote set-url origin git@github.com:YOUR_ORG/YOUR_REPO.git`
+**Canonical public repo:** [github.com/NetworkBuild3r/nemoclaw](https://github.com/NetworkBuild3r/nemoclaw). Other projects (e.g. ServiceNow MCP under GitLab) are **separate** repos — do not point this monorepo’s `origin` at them.
+
+If the URL ever changes: `git remote set-url origin git@github.com:YOUR_ORG/YOUR_REPO.git`
 
 ## Repo readiness (maintain this before `git push`)
 
