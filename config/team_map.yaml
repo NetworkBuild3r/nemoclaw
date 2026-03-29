@@ -8,7 +8,6 @@ chief: platform
 # AHEAD Palo Alto demo
 ahead-chief: leadership
 mcp-builder: platform-engineering
-researcher: research
-skill-author: research
-skill-builder: research
+skill-builder: platform-engineering
 palo-expert: security-ops
+snow-birdman: change-management

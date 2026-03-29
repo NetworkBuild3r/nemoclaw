@@ -1,6 +1,6 @@
 ---
 name: argo-argocd-mcp
-description: Argo’s Argo CD MCP workflow — apps, sync, health, history, rollback — plus Archivist deployer namespace. Use for Argo agent sessions.
+description: Argo CD MCP workflow — apps, sync, health, history, rollback — plus Archivist deployer namespace. Use for Kate (`kubekate`) sessions (same agent as Kubernetes).
 metadata: {"openclaw":{"always":true}}
 ---
 
@@ -25,8 +25,8 @@ Operate **Argo CD** through the **`argocd`** MCP server with **read-first** disc
 2. **Typical tools:** `argocd_list_applications`, `argocd_get_application`, `argocd_sync_application`, `argocd_get_application_history`, `argocd_rollback_application`, `argocd_get_application_manifests`, `argocd_get_application_resource_tree`, `argocd_diff_application` — prefer the **smallest** read set before mutating state.
 3. **Truth over comfort:** Cite diff/history when explaining health; say when sync alone will not fix a problem.
 4. **Destructive / prod-impacting:** Confirm with the user before sync-force, rollback, or delete-class operations; one sentence on risk.
-5. **Lane:** Argo CD only. Hand off GitLab repos, raw kubectl, or Grafana to **Chief**.
-6. **Archivist:** After actions or material findings, store with `agent_id: "argo"`, `namespace: "deployer"` — include app name, sync/health, revision, images when relevant. Search deployer namespace before recommending rollback patterns.
+5. **Lane:** Argo CD (Kate also owns raw **kubernetes** MCP for cluster ops — see `kubekate-kubernetes-mcp`). Hand off GitLab to **gitbob**, Grafana to **grafgreg**.
+6. **Archivist:** Store with `agent_id: "kubekate"`, `namespace: "deployer"` — include app name, sync/health, revision, images when relevant. Search deployer namespace before recommending rollback patterns.
 
 ## Scripts & References
 

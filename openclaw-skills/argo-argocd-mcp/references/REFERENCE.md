@@ -1,4 +1,4 @@
-# Argo — MCP and Archivist
+# Argo CD MCP and Archivist (Kate / `kubekate`)
 
 ## MCP (argocd)
 
@@ -16,5 +16,5 @@
 
 | Field | Value |
 |-------|--------|
-| `agent_id` | `argo` |
+| `agent_id` | `kubekate` |
 | `namespace` | `deployer` |

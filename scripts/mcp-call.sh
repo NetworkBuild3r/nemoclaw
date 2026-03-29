@@ -85,12 +85,12 @@ call_streamable() {
 
   [[ -z "$response" ]] && die "empty response from $url"
 
-  python3 -c "
+  echo "$response" | python3 -c "
 import sys, json
 try:
-    d = json.loads(sys.argv[1])
-except json.JSONDecodeError:
-    print('Error: server returned non-JSON: ' + sys.argv[1][:120], file=sys.stderr)
+    d = json.load(sys.stdin)
+except json.JSONDecodeError as e:
+    print('Error: server returned non-JSON: ' + str(e)[:120], file=sys.stderr)
     sys.exit(1)
 if 'error' in d:
     e = d['error']
@@ -110,7 +110,7 @@ elif 'content' in result:
             print(item['text'])
 else:
     print(json.dumps(result, indent=2))
-" "$response"
+"
 }
 
 # --- SSE call (archivist) ---------------------------------------------------

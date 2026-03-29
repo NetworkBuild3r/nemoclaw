@@ -20,7 +20,7 @@ Keep every agent workspace under `agents/<role>/` structurally consistent and li
 
 | File | Purpose | Create if missing? |
 |------|---------|--------------------|
-| `AGENTS.md` | Role, rules, Archivist usage | Yes (from `docs/reference/templates/AGENTS.md`) |
+| `AGENTS.md` | Role, rules, Archivist usage, **fleet engineering rules** (`agents/ENGINEERING_ALGORITHM.md`) | Yes (from `docs/reference/templates/AGENTS.md`; fleet agents must include the Tesla/SpaceX–style five-step mandate) |
 | `SOUL.md` | Persona and voice | Yes (from template) |
 | `IDENTITY.md` | Name, Creature, Vibe, Emoji, Avatar | Yes — see format below |
 | `TOOLS.md` | Agent-specific tool notes (MCP endpoints, SSH, paths) | Yes — customize per agent |

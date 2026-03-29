@@ -8,10 +8,11 @@ OpenClaw **does not** list `SKILL.md` files next to AGENTS.md in the session boo
 
 | Path (under this workspace) | Purpose |
 |-----------------------------|--------|
-| `skills/kubekate-kubernetes-mcp/SKILL.md` | Your Kubernetes MCP + Archivist workflow |
+| `skills/kubekate-kubernetes-mcp/SKILL.md` | Kubernetes MCP + Archivist |
+| `skills/argo-argocd-mcp/SKILL.md` | Argo CD MCP (same agent — Kate) |
 | `skills/archivist-mcp/` | Fleet memory tool usage |
 | `skills/nemoclaw-mcp-fleet/` | MCP server names → roles |
-| `skills/nemoclaw-agent-fleet/` | Who owns GitOps vs K8s vs Grafana |
+| `skills/nemoclaw-agent-fleet/` | Fleet roster |
 
 If `skills/` is missing on disk, ensure the repo has `openclaw-skills/` and the `skills` symlink in this folder. The gateway still loads skills via `skills.load.extraDirs` in `openclaw.json`; this tree is so **you** can read the same files in your workspace.
 
@@ -32,6 +33,7 @@ Usage: `ssh thinkpad`, `ssh k2`, `ssh k3`
 | Server | Endpoint | Purpose |
 |--------|----------|---------|
 | `kubernetes` | `http://192.168.11.160:8080/kubernetes/mcp` | kubectl via mcp-aggregator |
+| `argocd` | `http://192.168.11.160:8080/argocd/mcp` | Argo CD apps, sync, health, rollback |
 | `archivist` | `http://192.168.11.142:3100/mcp/sse` | Fleet memory |
 
 ## How to Call MCP Tools
@@ -50,10 +52,17 @@ mcp-call kubernetes kubectl_logs '{"name":"my-pod","namespace":"default"}'
 mcp-call kubernetes kubectl_scale '{"name":"my-deploy","namespace":"default","replicas":3}'
 ```
 
+### Argo CD MCP
+
+```bash
+mcp-call argocd --list
+mcp-call argocd list_applications '{}'
+mcp-call argocd get_application '{"name":"my-app"}'
+```
+
 ### Archivist MCP
 
 ```bash
-# Save a finding to memory
 mcp-call archivist archivist_store '{"agent_id":"kubekate","namespace":"deployer","text":"Cluster has 3 healthy nodes","tags":["cluster","health"]}'
 
 # Search memory

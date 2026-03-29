@@ -68,7 +68,7 @@ Condensed from `archivist-oss/docs/CURSOR_SKILL.md` and fleet `AGENTS.md`. For f
 |-------------------|------|-----------------------------------|
 | `chief` | Coordinator | `chief` |
 | `gitbob` | GitLab/Git | `pipeline` |
-| `argo` | Argo CD | `deployer` |
+| `kubekate` | Kate — K8s + Argo CD | `deployer` |
 | `kubekate` | Kubernetes | `deployer` |
 | `grafgreg` | Grafana | `pipeline` |
 

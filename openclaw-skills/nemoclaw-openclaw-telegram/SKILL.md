@@ -78,6 +78,18 @@ OpenClaw reads `requireMention` from **`channels.telegram.groups.<groupId>.topic
 
 ---
 
+## Single bot per forum group (Chief-only)
+
+Use **one** bot account in the forum supergroup (typically **`chief`**) and route **every** topic `agentId` to `chief`. Each topic still gets its **own session** (isolation by `message_thread_id`).
+
+- Under **`channels.telegram.accounts.chief.groups."<groupId>".topics`**, list every topic id you use and set `"agentId": "chief"` (including General, usually `"1"`).
+- Mirror **`requireMention`** at both `channels.telegram.groups` and `accounts.chief.groups` as above.
+- For **gitbob**, **kubekate**, **grafgreg**, etc.: **omit** `groups."<groupId>"` for that forum group so those accounts stay **DM-only**; keep `bindings` for `(channel, accountId) → agentId` for private chats.
+- **Telegram:** remove other bots from the group so only Chief receives group updates; **BotFather** `/setprivacy` → **Disable** for Chief.
+- **New topics (no manual ids):** with a **patched** OpenClaw (`scripts/patch-openclaw-telegram-topic-wildcard.sh`) and `topics["*"]` + `topics["1"]` in config, new forum threads route to `chief` automatically; each thread still gets its own session. See `docs/CHIEF-FORUM-GROUP.md`.
+
+---
+
 ## Multi-Bot Wiring
 
 ### 1. Bot tokens (Vault -> disk)
@@ -101,7 +113,6 @@ The systemd service runs the sync as `ExecStartPre` on every gateway start.
       "accounts": {
         "chief":    { "enabled": true, "tokenFile": "/path/to/chief.token" },
         "gitbob":   { "enabled": true, "tokenFile": "/path/to/gitbob.token" },
-        "argo":     { "enabled": true, "tokenFile": "/path/to/argo.token" },
         "kubekate": { "enabled": true, "tokenFile": "/path/to/kubekate.token" },
         "grafgreg": { "enabled": true, "tokenFile": "/path/to/grafgreg.token" }
       }

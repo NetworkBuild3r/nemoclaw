@@ -5,7 +5,7 @@
 namespaces:
   - id: deployer
     read: ["all"]
-    write: ["deployer", "releaser", "kubekate", "argo"]
+    write: ["deployer", "releaser", "kubekate"]
     consistency: eventual
     ttl_days: 60
 
@@ -45,15 +45,16 @@ namespaces:
     consistency: eventual
     ttl_days: 60
 
+  # Retired for skill-builder: skills ship in git (openclaw-skills/) only — no Archivist bodies.
   - id: skills-research
     read: ["all"]
-    write: ["researcher", "skill-author"]
+    write: []
     consistency: eventual
     ttl_days: 90
 
   - id: skill-engineering
     read: ["all"]
-    write: ["skill-builder"]
+    write: []
     consistency: eventual
     ttl_days: 90
 
@@ -63,10 +64,15 @@ namespaces:
     consistency: eventual
     ttl_days: 60
 
+  - id: change-control
+    read: ["all"]
+    write: ["snow-birdman", "chief"]
+    consistency: eventual
+    ttl_days: 90
+
 agent_namespaces:
   chief: chief
   gitbob: pipeline
-  argo: deployer
   kubekate: deployer
   grafgreg: pipeline
   deployer: deployer
@@ -75,7 +81,7 @@ agent_namespaces:
   curator: curator
   ahead-chief: tasks
   mcp-builder: mcp-engineering
-  researcher: skills-research
-  skill-author: skills-research
-  skill-builder: skill-engineering
+  # Default Archivist context: read assignment briefs in `tasks` (writes still chief/ahead-chief only).
+  skill-builder: tasks
   palo-expert: firewall-ops
+  snow-birdman: change-control

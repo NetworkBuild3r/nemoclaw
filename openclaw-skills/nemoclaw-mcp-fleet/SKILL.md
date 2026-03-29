@@ -11,15 +11,15 @@ Connect **mcporter** (and similar MCP clients) to the **HTTP MCP** endpoints dec
 ## When to Use
 
 - Editing or explaining `config/mcporter.json`.
-- Telling GitBob vs Argo vs KubeKate vs GrafGreg which MCP namespace to call.
+- Telling GitBob vs Kate vs GrafGreg which MCP namespace to call.
 - Debugging "which URL is Archivist vs Kubernetes?".
 
 ## Instructions
 
 1. **Authoritative config:** Read `config/mcporter.json` in the repo. It lists `mcpServers` with `url` and `description`. Hostnames and ports are **environment-specific**; treat them as deployment values, not portable constants.
 2. **Server roles:**
-   - **kubernetes** — cluster operations (KubeKate).
-   - **argocd** — Argo CD apps, sync, history (Argo).
+   - **kubernetes** — cluster operations (Kate / `kubekate`).
+   - **argocd** — Argo CD apps, sync, history (**same agent** as `kubernetes` — Kate / `kubekate`).
    - **grafana** — dashboards, PromQL, alerts (GrafGreg).
    - **gitlab** — projects, MRs, pipelines (GitBob; GitLab API via MCP).
    - **archivist** — fleet long-term memory (all agents, with RBAC).

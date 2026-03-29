@@ -24,9 +24,8 @@ You coordinate and delegate. Your team runs the specialist tools:
 
 | Agent | Specialty | MCP Server |
 |-------|-----------|------------|
-| **KubeKate** | Kubernetes ops | `kubernetes` |
+| **Kate (`kubekate`)** | Kubernetes **and** Argo CD | `kubernetes`, `argocd` |
 | **GitBob** | GitLab CI/CD | `gitlab` |
-| **Argo** | ArgoCD GitOps | `argocd` |
 | **GrafGreg** | Grafana metrics | `grafana` |
 
 All agents share **archivist** (`http://192.168.11.142:3100/mcp/sse`) for fleet memory.
@@ -60,17 +59,10 @@ If **`exec`** reports **`mcp-call: not found`**, the gateway **`PATH`** may be t
 
 ### Skill status (skill-builder)
 
-When checking whether a **new skill** (e.g. Synology CLI) was **delivered**, search **`skill-engineering`** and **`tasks`** — not only **`chief`**.
+**Proof of delivery** = **`openclaw-skills/<name>/SKILL.md`** (and symlink) in the **repo** — not Archivist. Ask Brian or check git/MR.
 
 ```bash
-# Indexes: your coordination + skill-builder deliverables
-mcp-call archivist archivist_index '{"agent_id":"chief","namespace":"chief"}'
-mcp-call archivist archivist_index '{"agent_id":"skill-builder","namespace":"skill-engineering"}'
-
-# skill-builder ship summaries / drafts (replace query terms)
-mcp-call archivist archivist_search '{"query":"synology SKILL skill-build","agent_id":"skill-builder","namespace":"skill-engineering","refine":false,"min_score":0}'
-
-# tasks queue: assignments tagged [SKILL-BUILD] (you may archivist_store into `tasks` with agent_id chief)
+# Optional: assignment briefs still in tasks
 mcp-call archivist archivist_search '{"query":"[SKILL-BUILD] synology","agent_id":"chief","namespace":"tasks","refine":false,"min_score":0}'
 ```
 

@@ -21,6 +21,12 @@ Use **`mcp-call brave brave_web_search`** for internet search. Server: [`mcp-ser
 mcp-call brave brave_web_search '{"query":"NVIDIA NemoClaw sandbox","count":5}'
 ```
 
+## If Brave returns **422**
+
+- Use a **Web Search** API key from [api-dashboard.search.brave.com](https://api-dashboard.search.brave.com/) — confirm plan/quota.
+- Keep **`query`** short plain text (no pasted JSON blobs); agents must not stuff tool output into `q`.
+- Ensure **`BRAVE_API_KEY`** is in the environment of the **MCP process** (restart after changing). See **`mcp-servers/brave-search/README.md`** — Troubleshooting.
+
 ## Security
 
 Do not commit API keys. Rotate any key pasted into chat.

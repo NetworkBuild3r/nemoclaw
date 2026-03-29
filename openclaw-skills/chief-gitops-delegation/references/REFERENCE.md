@@ -3,9 +3,9 @@
 | Specialist | OpenClaw agent id (typical) | Scope |
 |------------|----------------------------|--------|
 | GitBob | `gitbob` | GitLab / MR / CI |
-| Argo | `argo` | Argo CD |
-| KubeKate | `kubekate` | Kubernetes |
+| Kate | `kubekate` | Kubernetes + Argo CD (both MCPs) |
 | GrafGreg | `grafgreg` | Grafana |
+| Birdman | `snow-birdman` | ServiceNow — incidents, CHG (change control) |
 
 ## Archivist
 

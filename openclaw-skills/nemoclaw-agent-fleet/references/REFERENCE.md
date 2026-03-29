@@ -1,5 +1,7 @@
 # Fleet quick reference
 
+**Squads:** **Delivery** — Bob (`gitbob`), Kate (`kubekate` K8s+Argo CD), Greg (`grafgreg`). **Factory** — Forge (`mcp-builder`), Quill (`skill-builder`). Full detail: [`docs/FLEET-ROSTER.md`](../../../docs/FLEET-ROSTER.md).
+
 ## Agent roster (full)
 
 ### GitOps & delivery
@@ -8,20 +10,23 @@
 |----------|---------|-----------|------------------------|
 | `chief` | Chief of staff | None (delegates) | `chief` |
 | `gitbob` | GitLab/GitHub | `gitlab` | `pipeline` |
-| `argo` | Argo CD | `argocd` | `deployer` |
-| `kubekate` | Kubernetes | `kubernetes` | `deployer` |
+| `kubekate` | Kate — **K8s + Argo CD** | `kubernetes`, `argocd` | `deployer` |
 | `grafgreg` | Grafana | `grafana` | `pipeline` |
 
-### Palo Alto, skills, and capability building
+### ITSM & change control
+
+| Agent id | Persona | MCP focus | Archivist `namespace` |
+|----------|---------|-----------|------------------------|
+| `snow-birdman` | Birdman (ServiceNow) | `servicenow` | `change-control` |
+
+### Palo Alto & capability building
 
 | Agent id | Persona | MCP focus | Archivist `namespace` |
 |----------|---------|-----------|------------------------|
 | `ahead-chief` | Task bus orchestrator | None (Archivist only) | `tasks` |
 | `palo-expert` | PAN-OS / firewall | `paloalto` | `firewall-ops` |
-| `mcp-builder` | Build/deploy MCP servers | None (builds them) | `mcp-engineering` |
-| `skill-builder` | Author AgentSkills | None (writes SKILL.md) | `skill-engineering` |
-| `researcher` | Doc/API research | None (reads docs) | `skills-research` |
-| `skill-author` | Skill authoring (alternate) | None | `skill-engineering` |
+| `mcp-builder` | Forge — build/deploy MCP servers | None (builds them) | `mcp-engineering` |
+| `skill-builder` | Quill — Brave + repo **`openclaw-skills/<name>/`** (git); **not** Archivist | `brave` | *(none — skills live in git)* |
 
 ## Delegation mechanisms
 
@@ -29,7 +34,7 @@
 |--------|-----------|-------------|-----------|
 | `sessions_spawn` | OpenClaw tool — isolated one-shot child session | Chief, ahead-chief | **No** — returns immediately |
 | Normal OpenClaw routing | Gateway routes message to agent by `agentId` | Any user/bot | Synchronous chat |
-| Archivist `tasks` namespace | Write brief, builder polls and picks up | ahead-chief → skill-builder, mcp-builder | Async (polling) |
+| Archivist `tasks` namespace | Write brief, builder polls and picks up | **chief** or **ahead-chief** → **skill-builder**, **mcp-builder** | Async (polling) |
 
 ## `sessions_spawn` API reference
 
@@ -86,12 +91,12 @@ sessions_spawn({
 })
 ```
 
-### Example — spawn researcher
+### Example — research brief (same agent as skill build)
 
 ```
 sessions_spawn({
-  task: "Goal: research Cisco IOS XE REST API auth and endpoints. Done when: archivist_store into skills-research with structured notes (auth method, base URL pattern, key endpoints, rate limits).",
-  agentId: "researcher",
+  task: "Goal: research Cisco IOS XE REST API auth and endpoints. Done when: archivist_store into skills-research with agent_id skill-builder (structured notes: auth, base URL, endpoints, rate limits).",
+  agentId: "skill-builder",
   label: "Cisco IOS research",
   runTimeoutSeconds: 600,
   sandbox: "inherit"

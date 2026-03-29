@@ -1,5 +1,5 @@
 {
-  "_comment": "Example openclaw.json for NemoClaw NVIDIA stack. Copy to .openclaw/openclaw.json and fill in secrets/paths.",
+  "_comment": "Example openclaw.json for NemoClaw NVIDIA stack. Copy to .openclaw/openclaw.json and fill in secrets/paths. Configure models.providers (e.g. LiteLLM) so litellm-local/openclaw-opus-46 resolves. Full roster: docs/FLEET-ROSTER.md. Chief-only forum group pattern: docs/CHIEF-FORUM-GROUP.md.",
   "models": {
     "mode": "merge",
     "providers": {}
@@ -33,12 +33,6 @@
         "agentDir": "/home/YOU/.openclaw/agents/gitbob/agent"
       },
       {
-        "id": "argo",
-        "name": "argo",
-        "workspace": "/home/YOU/nemoclaw/agents/argocd-argo",
-        "agentDir": "/home/YOU/.openclaw/agents/argo/agent"
-      },
-      {
         "id": "kubekate",
         "name": "kubekate",
         "workspace": "/home/YOU/nemoclaw/agents/k8s-kate",
@@ -49,15 +43,36 @@
         "name": "grafgreg",
         "workspace": "/home/YOU/nemoclaw/agents/grafana-greg",
         "agentDir": "/home/YOU/.openclaw/agents/grafgreg/agent"
+      },
+      {
+        "id": "snow-birdman",
+        "name": "snow-birdman",
+        "workspace": "/home/YOU/nemoclaw/agents/snow-birdman",
+        "agentDir": "/home/YOU/.openclaw/agents/snow-birdman/agent"
+      },
+      {
+        "id": "mcp-builder",
+        "name": "mcp-builder",
+        "workspace": "/home/YOU/nemoclaw/agents/mcp-builder",
+        "agentDir": "/home/YOU/.openclaw/agents/mcp-builder/agent"
+      },
+      {
+        "id": "skill-builder",
+        "name": "skill-builder",
+        "workspace": "/home/YOU/nemoclaw/agents/skill-builder",
+        "agentDir": "/home/YOU/.openclaw/agents/skill-builder/agent",
+        "model": {
+          "primary": "litellm-local/openclaw-opus-46"
+        }
       }
     ]
   },
   "bindings": [
     { "type": "route", "agentId": "chief",    "match": { "channel": "telegram", "accountId": "chief" } },
     { "type": "route", "agentId": "gitbob",   "match": { "channel": "telegram", "accountId": "gitbob" } },
-    { "type": "route", "agentId": "argo",     "match": { "channel": "telegram", "accountId": "argo" } },
     { "type": "route", "agentId": "kubekate", "match": { "channel": "telegram", "accountId": "kubekate" } },
-    { "type": "route", "agentId": "grafgreg", "match": { "channel": "telegram", "accountId": "grafgreg" } }
+    { "type": "route", "agentId": "grafgreg", "match": { "channel": "telegram", "accountId": "grafgreg" } },
+    { "type": "route", "agentId": "snow-birdman", "match": { "channel": "telegram", "accountId": "snow-birdman" } }
   ],
   "skills": {
     "load": {
@@ -70,21 +85,36 @@
   "channels": {
     "telegram": {
       "enabled": true,
+      "groups": {
+        "-100YOUR_SUPERGROUP_ID": {
+          "requireMention": true,
+          "enabled": true,
+          "topics": {
+            "1": { "requireMention": true, "agentId": "chief" },
+            "*": { "requireMention": false, "agentId": "chief" }
+          }
+        }
+      },
       "accounts": {
         "chief": {
           "name": "chief",
           "enabled": true,
-          "tokenFile": "/home/YOU/.openclaw/secrets/telegram/chief.token"
+          "tokenFile": "/home/YOU/.openclaw/secrets/telegram/chief.token",
+          "groups": {
+            "-100YOUR_SUPERGROUP_ID": {
+              "requireMention": true,
+              "enabled": true,
+              "topics": {
+                "1": { "requireMention": true, "groupPolicy": "open", "agentId": "chief" },
+                "*": { "requireMention": false, "groupPolicy": "open", "agentId": "chief" }
+              }
+            }
+          }
         },
         "gitbob": {
           "name": "gitbob",
           "enabled": true,
           "tokenFile": "/home/YOU/.openclaw/secrets/telegram/gitbob.token"
-        },
-        "argo": {
-          "name": "argo",
-          "enabled": true,
-          "tokenFile": "/home/YOU/.openclaw/secrets/telegram/argo.token"
         },
         "kubekate": {
           "name": "kubekate",
@@ -95,6 +125,11 @@
           "name": "grafgreg",
           "enabled": true,
           "tokenFile": "/home/YOU/.openclaw/secrets/telegram/grafgreg.token"
+        },
+        "snow-birdman": {
+          "name": "snow-birdman",
+          "enabled": false,
+          "tokenFile": "/home/YOU/.openclaw/secrets/telegram/snow-birdman.token"
         }
       }
     }

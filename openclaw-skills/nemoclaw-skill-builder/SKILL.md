@@ -30,7 +30,7 @@ Ship **NemoClaw skills** so both **Cursor** and **OpenClaw runtime agents** (Tel
 6. **NemoClaw content:** Tie specialist skills to **`agents/<role>/AGENTS.md`** (MCP server name, Archivist `agent_id` / `namespace`). Cross-link shared skills (`archivist-mcp`, `nemoclaw-mcp-fleet`, `nemoclaw-agent-fleet`) by path under `openclaw-skills/`, not `.cursor/skills/`.
 7. **After config changes:** Restart the **OpenClaw gateway** when only `openclaw.json` (or `extraDirs`) changes — new files under an already-listed `extraDirs` path are picked up on the next skill reload/restart depending on version; if in doubt, restart.
 8. **Deliverable:** Give the full directory layout (`openclaw-skills/<name>/SKILL.md`, optional `references/REFERENCE.md`) plus the symlink command for `.cursor/skills/`.
-9. **Fleet roles:** For **agent-authored** skills, see repo skills **`openclaw-skills/skill-builder/SKILL.md`** (research + `SKILL.md` + **`skill-engineering`** Archivist) and **`openclaw-skills/mcp-builder/SKILL.md`** (MCP servers + **`mcp-engineering`**). **`ahead-chief`** assigns `[SKILL-BUILD]` / `[MCP-BUILD]` tasks in **`tasks`**.
+9. **Fleet roles:** For **agent-authored** skills, see **`openclaw-skills/skill-builder/SKILL.md`** (Brave **`brave`** + on-disk **`openclaw-skills/<name>/`**) and **`openclaw-skills/mcp-builder/SKILL.md`** (MCP servers + **`mcp-engineering`**). **`ahead-chief`** may assign `[SKILL-BUILD]` in **`tasks`** — skill-builder still **ships to git files**, not Archivist.
 
 ## Scripts & References
 

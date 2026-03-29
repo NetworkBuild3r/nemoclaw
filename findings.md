@@ -68,3 +68,37 @@
 - Cluster naming convention: MCP servers use `mcp-<name>` namespaces. Paloalto deployed to `mcp-paloalto`.
 - Private registry at `192.168.11.170:5000`. Placeholders replaced: PAN MGMT → `pan-mock.local`, GitLab → `gitlab.ibhacked.us`.
 
+---
+
+## Chief-only forum Telegram (2026-03-26)
+
+- **Config:** `topics` for supergroup `-1003828106848` all use `agentId: chief`; `gitbob` / `kubekate` / `grafgreg` no longer have `groups` for that id (DM `bindings` unchanged).
+- **Sessions:** OpenClaw isolates per `message_thread_id`; new topics need explicit ids in JSON (see `docs/CHIEF-FORUM-GROUP.md`).
+- **NemoClaw bridge:** align `TELEGRAM_BOT_TOKEN` with Chief token if both host gateway and sandbox bridge are used (`docs/NEMOCLAW-NVIDIA-STACK.md`).
+
+---
+
+## GitLab MCP authorization + Bob exec issues (2026-03-26)
+
+### GitLab MCP — RESOLVED
+
+- **Symptom:** `mcp-call gitlab list_projects '{}'` initially returned `Error: Unauthorized`
+- **Resolution:** MCP server already had valid auth configured internally (user was correct). Issue resolved after aggregator restart.
+- **Verified:** Successfully tested `list_projects`, `get_project`, `list_merge_requests` with real data from `gitlab.ibhacked.us`
+
+### Bob exec issue — RESOLVED
+
+- **Symptom:** GitBob (Telegram agent) couldn't execute `/home/bnelson/nemoclaw/scripts/mcp-call.sh`
+- **Root cause:** Script not on gateway's `PATH`
+- **Fix:** Created `~/.local/bin/mcp-call` symlink; updated `agents/github-bob/AGENTS.md`; gateway restarted
+- **Verified:** Bob can now execute `mcp-call` commands
+
+### Large response handling — RESOLVED
+
+- **Symptom:** GitLab returned 393KB of projects → "Argument list too long" error
+- **Root cause:** `mcp-call.sh` passed response via Python argv (OS limit ~2MB)
+- **Fix:** Updated script to use stdin (`echo "$response" | python3 -c ...`)
+- **Verified:** Can now handle responses of any size
+
+**Docs:** `docs/GITBOB-STATUS.md`, `docs/GITLAB-MCP-AUTH-ISSUE.md`, `docs/GITBOB-MCP-EXEC-ISSUE.md`
+

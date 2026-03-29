@@ -61,6 +61,14 @@ Ship a judge-ready demo: **memory-as-message-bus** (Archivist), **pre-configured
 |-------|---------|------------|
 | | | |
 
+## Chief-only forum Telegram (2026-03-26)
+
+- [x] `openclaw.json`: topics for `-1003828106848` → `chief`; remove other accounts’ `groups` for that id
+- [x] Docs + skills (`docs/CHIEF-FORUM-GROUP.md`, `nemoclaw-openclaw-telegram`, example config, vault note, NEMOCLAW stack, deployment skill, chief delegation)
+- [ ] Operator: Telegram app — only Chief bot in forum group; BotFather privacy off for Chief
+
+See `findings.md` for technical summary.
+
 ## Notes
 
 - Re-read before major decisions.

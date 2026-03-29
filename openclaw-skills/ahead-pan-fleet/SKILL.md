@@ -6,7 +6,7 @@ metadata: {"openclaw":{}}
 
 # Goal
 
-Run the **AHEAD × Palo Alto** agent slice: **`ahead-chief`**, **`mcp-builder`**, **`researcher`**, **`skill-author`**, **`palo-expert`** — with **Archivist RBAC** from [`config/namespaces.yaml`](../../config/namespaces.yaml).
+Run the **AHEAD × Palo Alto** agent slice: **`ahead-chief`**, **`mcp-builder`** (Forge), **`skill-builder`** (Quill — research + repo skills), **`palo-expert`** — with **Archivist RBAC** from [`config/namespaces.yaml`](../../config/namespaces.yaml).
 
 ## Agent → namespace (writes)
 
@@ -14,9 +14,7 @@ Run the **AHEAD × Palo Alto** agent slice: **`ahead-chief`**, **`mcp-builder`**
 |----------|-------------------|------|
 | `ahead-chief` | `tasks` | Task briefs, synthesis; **delegates** `[SKILL-BUILD]` / `[MCP-BUILD]` via same namespace |
 | `mcp-builder` | `mcp-engineering` | **Build + push + deploy** MCP servers; see [`mcp-builder`](../mcp-builder/SKILL.md) |
-| `skill-builder` | `skill-engineering` | **Author** repo skills under `openclaw-skills/`; see [`skill-builder`](../skill-builder/SKILL.md) |
-| `researcher` | `skills-research` | API / doc findings |
-| `skill-author` | `skills-research` | Playbooks / SKILL-shaped text |
+| `skill-builder` | *(skills live under* **`openclaw-skills/`** *in git)* | **Author** repo `SKILL.md` trees; see [`skill-builder`](../skill-builder/SKILL.md) |
 | `palo-expert` | `firewall-ops` | Audit results |
 
 **Read:** all namespaces allow `read: ["all"]` — any agent can `archivist_search` across the fleet; writes are ACL-limited.
@@ -34,7 +32,7 @@ The demo expects **NemoClaw `mcp-builder`** to drive delivery from [`mcp-servers
 
 ## Team labels
 
-See [`config/team_map.yaml`](../../config/team_map.yaml): `leadership`, `platform-engineering`, `research`, `security-ops`.
+See [`config/team_map.yaml`](../../config/team_map.yaml): `leadership`, `platform-engineering`, `security-ops`.
 
 ## Security
 

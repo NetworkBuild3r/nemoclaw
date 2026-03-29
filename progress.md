@@ -121,3 +121,18 @@ Three agent personas simulated via `mcp-call`:
 
 **Phase 4 status: complete.** All `task_plan.md` phases marked complete.
 
+---
+
+## Session: 2026-03-26 — Chief-only forum Telegram
+
+- Updated `~/.openclaw/openclaw.json`: all forum topics for `-1003828106848` route to `chief`; removed `groups` for `gitbob`, `kubekate`, `grafgreg` for that supergroup (DM bindings unchanged).
+- `openclaw config validate` OK; `systemctl --user restart openclaw-gateway.service` active.
+- Docs: `docs/CHIEF-FORUM-GROUP.md`; skill/example updates for Chief-only pattern; `docs/NEMOCLAW-NVIDIA-STACK.md` + `nemoclaw-deployment` note on `TELEGRAM_BOT_TOKEN` vs host Chief bot.
+
+## Session: 2026-03-26 — GitLab MCP troubleshooting — RESOLVED
+
+- **GitLab MCP authorization:** Initially appeared unauthorized. User confirmed MCP server handles auth internally. After aggregator restart, MCP successfully authenticates to `gitlab.ibhacked.us`. Tested and verified: `list_projects`, `get_project`, `list_merge_requests` all working.
+- **GitBob exec issue:** Bob's Telegram sessions couldn't run `/home/bnelson/nemoclaw/scripts/mcp-call.sh` (PATH resolution). Fixed: created `~/.local/bin/mcp-call` symlink; updated `agents/github-bob/AGENTS.md` with absolute path fallback; gateway restarted.
+- **Large response handling:** GitLab MCP returned 393KB of projects → "Argument list too long". Fixed: updated `scripts/mcp-call.sh` to use stdin instead of argv for Python JSON parsing (line 86–113). Now handles responses of any size.
+- **Documentation:** `docs/GITBOB-STATUS.md` (resolved summary), `docs/GITLAB-MCP-AUTH-ISSUE.md`, `docs/GITBOB-MCP-EXEC-ISSUE.md`.
+

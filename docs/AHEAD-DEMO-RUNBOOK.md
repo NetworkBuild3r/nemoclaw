@@ -37,8 +37,6 @@ Use [`config/policies/ahead_pan_sandbox.preset.yaml`](../config/policies/ahead_p
 | ahead-chief | yes | yes | yes | no | optional | no |
 | mcp-builder | yes | yes | yes | **yes** | **if CI** | no |
 | skill-builder | yes | optional | yes | no | **if MR** | no |
-| researcher | yes | optional | yes | no | optional | no |
-| skill-author | yes | optional | yes | no | optional | no |
 | palo-expert | yes | yes | yes | no | no | **yes** (replace `REPLACE_WITH_PAN_MGMT_HOSTNAME`) |
 
 **Blocked egress shot:** add a policy rule for a forbidden host and show OpenShell deny in logs.
@@ -46,7 +44,7 @@ Use [`config/policies/ahead_pan_sandbox.preset.yaml`](../config/policies/ahead_p
 ## Dry-run checklist (2–3 clean passes)
 
 1. **ahead-chief:** `archivist_store` a task into `tasks` with **done-when** including image push + rollout (see [`agents/ahead-chief/AGENTS.md`](../agents/ahead-chief/AGENTS.md)).
-2. **researcher** (optional): store a doc snippet into `skills-research`.
+2. **skill-builder** (optional): store research notes into `skills-research` (`agent_id: skill-builder`) or ship a skill snippet.
 3. **mcp-builder:** **build and push** the image (or drive GitLab CI to do it), **apply** manifests, smoke `mcp-call paloalto --list`, then **`archivist_store`** proof in `mcp-engineering`.
 4. **palo-expert:** `mcp-call paloalto panos_show_system_info '{}'` then `archivist_store` audit into `firewall-ops`.
 5. **ahead-chief:** `archivist_insights` or cross-namespace `archivist_search` for synthesis.
@@ -55,6 +53,6 @@ For the video, you may **pre-stage** the aggregator route or a long CI run; stil
 
 ## OpenClaw agents
 
-Registered in [`.openclaw/openclaw.json`](../.openclaw/openclaw.json) with workspaces under `agents/{ahead-chief,mcp-builder,researcher,skill-author,palo-expert}/`.
+Registered in [`.openclaw/openclaw.json`](../.openclaw/openclaw.json) with workspaces under `agents/{ahead-chief,mcp-builder,skill-builder,palo-expert}/`.
 
 Demo agents use **`nvidia/nemotron-3-super-120b-a12b`**. If `NVIDIA_API_KEY` is unset, switch their `model.primary` to `litellm-local/openclaw-haiku` (or your LiteLLM route) for local testing.

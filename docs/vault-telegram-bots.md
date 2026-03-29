@@ -12,7 +12,6 @@ OpenClaw reads Telegram tokens from **files** (`channels.telegram.accounts.*.tok
 |------------|-----------|----------------------------------|
 | `chief`    | chief     | `kv/nemoclaw/telegram/chief`     |
 | `gitbob`   | gitbob    | `kv/nemoclaw/telegram/gitbob`    |
-| `argo`     | argo      | `kv/nemoclaw/telegram/argo`      |
 | `kubekate` | kubekate  | `kv/nemoclaw/telegram/kubekate`  |
 | `grafgreg` | grafgreg  | `kv/nemoclaw/telegram/grafgreg`  |
 
@@ -43,7 +42,9 @@ cd /home/bnelson/nemoclaw
 Writes (canonical paths under the repo; `~/.openclaw` may symlink here):
 
 - `/home/bnelson/nemoclaw/.openclaw/secrets/telegram/chief.token`
-- `.../gitbob.token`, `.../argo.token`, `.../kubekate.token`, `.../grafgreg.token` (mode `600`)
+- `.../gitbob.token`, `.../kubekate.token`, `.../grafgreg.token` (mode `600`)
+
+The standalone **`argo`** bot is retired — Argo CD is **Kate** (`kubekate`). If you still have `kv/nemoclaw/telegram/argo`, you can delete it after migrating any group topic bindings to **`kubekate`** in `openclaw.json`.
 
 The **systemd** `openclaw-gateway.service` runs this script in `ExecStartPre` so tokens refresh on each gateway start (pick up rotations after Vault is updated).
 
@@ -64,6 +65,8 @@ After you **rotate** tokens in Vault, run `systemctl --user restart openclaw-gat
 ## Agents vs gateway
 
 **OpenClaw / NemoClaw agents** do not read Telegram bot tokens directly. Only the **gateway** needs them to run the Telegram Bot API pollers. Tokens are **not** passed into agent workspaces; routing uses `bindings` + `tokenFile` on the gateway host.
+
+**Forum group vs DMs:** In a Chief-only forum setup, only the **Chief** bot token participates in the supergroup; other accounts (`gitbob`, `kubekate`, …) still use **their** Vault tokens for **private DMs** when those accounts remain enabled and bound. See `docs/CHIEF-FORUM-GROUP.md`.
 
 ## Troubleshooting
 

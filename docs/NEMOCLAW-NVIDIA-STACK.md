@@ -102,6 +102,10 @@ cp ~/nemoclaw/config/openclaw.json.example ~/.openclaw/openclaw.json
 
 If migrating from an existing host, your `.openclaw/openclaw.json` should already be populated.
 
+### Host gateway vs sandbox Telegram bridge
+
+The **host** OpenClaw gateway can run multiple `channels.telegram.accounts` (Chief, GitBob, …) with `tokenFile` paths. **NemoClaw’s** optional `nemoclaw start` bridge uses **`TELEGRAM_BOT_TOKEN`** for the sandbox. If you use a **Chief-only forum group** on the host (`docs/CHIEF-FORUM-GROUP.md`), set `TELEGRAM_BOT_TOKEN` to the **same Chief bot token** when running the bridge, or avoid running both bridges against conflicting tokens for the same chat.
+
 ## Step 7: NemoClaw Onboard (Create Sandbox)
 
 ```bash

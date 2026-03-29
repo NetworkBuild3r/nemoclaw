@@ -4,7 +4,7 @@
 # Vault layout (KV v2, mount: kv):
 #   kv/nemoclaw/telegram/<accountId>   field: token
 #
-# Accounts: chief, gitbob, argo, kubekate, grafgreg
+# Accounts: chief, gitbob, kubekate, grafgreg (legacy `argo` bot retired — Kate covers Argo CD)
 #
 # Usage:
 #   export VAULT_ADDR=http://192.168.11.160:8200
@@ -31,7 +31,7 @@ fi
 mkdir -p "$OUT_DIR"
 chmod 700 "$OUT_DIR" 2>/dev/null || true
 
-ACCOUNTS=(chief gitbob argo kubekate grafgreg)
+ACCOUNTS=(chief gitbob kubekate grafgreg)
 for id in "${ACCOUNTS[@]}"; do
   path="${VAULT_KV_MOUNT}/${PREFIX}/${id}"
   out="${OUT_DIR}/${id}.token"

@@ -58,6 +58,8 @@ nemoclaw stop                # when done
 
 The bridge forwards messages between Telegram and the OpenClaw agent inside the sandbox. Only runs when `TELEGRAM_BOT_TOKEN` is set.
 
+If the **host** OpenClaw gateway already runs the Chief bot in your forum group, use the **same** Chief token for `TELEGRAM_BOT_TOKEN` (or do not run the sandbox bridge for that chat) so two different bots are not attached to the same coordination surface. See `docs/CHIEF-FORUM-GROUP.md` and `docs/NEMOCLAW-NVIDIA-STACK.md` (host gateway vs sandbox bridge).
+
 ### 5. Monitoring
 
 | Tool | Command | Purpose |

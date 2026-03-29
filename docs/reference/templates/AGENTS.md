@@ -6,6 +6,10 @@ This folder is home. Treat it that way.
 
 If `BOOTSTRAP.md` exists, that's your birth certificate. Follow it, figure out who you are, then delete it. You won't need it again.
 
+### NemoClaw fleet (if this workspace lives under `agents/<role>/`)
+
+**Fleet engineering rules (mandatory):** Tesla / SpaceX–style five-step sequence — see `agents/ENGINEERING_ALGORITHM.md` at the **repository root** (make requirements less dumb → delete waste → optimize → accelerate → automate **last**). Same order for every specialist; never skip ahead.
+
 ## Every Session
 
 Before doing anything else:

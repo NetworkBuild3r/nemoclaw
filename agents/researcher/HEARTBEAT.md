@@ -1,3 +1,0 @@
-# HEARTBEAT.md
-
-Default: `HEARTBEAT_OK`.

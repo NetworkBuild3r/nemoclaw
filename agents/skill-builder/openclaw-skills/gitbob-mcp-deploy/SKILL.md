@@ -1,77 +1,52 @@
 ---
 name: gitbob-mcp-deploy
-description: GitBob's complete MCP server build and deployment workflow. Covers creating repos, CI/CD, runner configs, and reviewing GitLab and K8s results.
+description: GitBob's complete MCP server build and deployment workflow, updated to address ServiceNow integration issues.
 ---
 
-# GitBob's MCP Deploy Workflow
+# GitBob's MCP Deploy Workflow (Updated)
 
-This skill provides the detailed steps for GitBob to build and deploy MCP servers in the NemoClaw fleet.
+This skill provides the detailed steps for GitBob to build and deploy MCP servers in the NemoClaw fleet, with specific additions to address issues encountered with the ServiceNow MCP integration.
 
-## Build Phase
-1. **Workspace:** Create your build files under `workspace/mcp/<name>/`. This is your working directory.
-2. **Files Needed:**
-   - `index.js` - MCP server entry point
-   - `package.json` - Node project config 
-   - `Dockerfile` - Build container image
-   - `.gitlab-ci.yml` - GitLab CI/CD pipeline config (see "Runner Tags" section below)
+## Critical Additions
 
-## GitLab Repo Creation
-1. Use the **`create_project`** MCP call with **camelCase** parameters:
-   ```json
-   {
-     "namespaceId": "mcpgroup",
-     "name": "mcp-myservice",
-     "description": "My MCP Service"
-   }
-   ```
-2. Ensure you have **MCP group access** to create the repo.
+### 1. MCP Server Implementation Requirements
+- MUST use @modelcontextprotocol/sdk (Node.js) or mcp (Python)
+- NEVER commit node_modules (add .gitignore)
+- Use ESM modules (package.json: "type": "module") 
+- Implement ACTUAL tool functions — no empty stubs
+- Example tool structure with real implementations
 
-## Push Workflow
-1. **Always check branch name**: Run `git branch -a` to see what branches exist, then use `master` or `main` accordingly.
-2. **Use HTTPS with token**: 
-   ```
-   git remote add origin https://oauth2:<token>@gitlab.ibhacked.us/mcp/mcp-myservice.git
-   git push origin <branch>
-   ```
-3. **Verify push**: Check the GitLab web UI or API to confirm the push succeeded.
+### 2. Transport Layer (REQUIRED)
+- Node.js stdio → wrap with supergateway for streamable-http
+- Dockerfile must run supergateway: `CMD ["npx", "supergateway", "node", "index.js", "--port", "8000", "--path", "/mcp"]`
+- Python uses create_streamable_http_app directly
+- Port 8000, path /mcp
 
-## Runner Tags
-**Always include these tags in `.gitlab-ci.yml` for every job:**
-```yaml
-image: docker:latest
-services:
-  - docker:dind
- 
-stages:
-  - build
-  - deploy
+### 3. CI/CD Fixes
+- Use internal registry: 192.168.11.170:5000
+- Tags: [mcp, docker, kaniko, container-build] 
+- Kaniko with --insecure flags
+- Auto-update ArgoCD deployment manifest with new image tag
 
-build:
-  stage: build
-  tags:
-    - docker
-    - kaniko
-  script:
-    - # build container image
+### 4. K8s Deployment
+- Use CI-built image (NOT base python/node + install)
+- Health probes: tcpSocket on port 8000 (NOT httpGet — supergateway doesn't expose /health)
+- ExternalSecret for credentials from Vault
 
-deploy:
-  stage: deploy
-  tags: 
-    - docker 
-    - kaniko
-  script:
-    - # deploy to K8s
-```
+### 5. Verification Checklist
+- ✅ MCP SDK installed and imported
+- ✅ All tools have real implementations (not stubs)
+- ✅ Transport layer configured (supergateway or streamable_http)
+- ✅ .gitignore excludes node_modules
+- ✅ CI builds and pushes to internal registry
+- ✅ K8s deployment uses CI image 
+- ✅ Pod starts and listens on port 8000
+- ✅ Aggregator can reach /mcp endpoint
+- ✅ Tools list via mcp-call
 
-## K8s Manifests
-After the GitLab pipeline succeeds, **push the k8s manifests** to the `home_k3` GitOps repo.
+Include the ServiceNow example as a reference implementation.
 
-## Verification Checklist
-- [ ] MCP service code is in GitLab repo
-- [ ] GitLab pipeline is running successfully 
-- [ ] K8s manifests are in home_k3 GitOps repo
-
-## Examples
-- Correct `.gitlab-ci.yml` with required tags
-- Correct HTTPS remote URL with token
-- Camelcase parameters for `create_project`
+Done when:
+- openclaw-skills/gitbob-mcp-deploy/SKILL.md updated with all fixes
+- git commit
+- NO Archivist storage
