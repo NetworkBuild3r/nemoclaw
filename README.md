@@ -28,6 +28,19 @@ Enterprise IT is at a breaking point. Deploying a single, "God-mode" AI agent to
 
 > *"We aren't just automating terminal commands; we are building a secure, resilient AI workforce that retains institutional knowledge forever."*
 
+### Operating philosophy (Tesla / SpaceX style)
+
+Every agent follows the same **five-step** discipline in [`agents/ENGINEERING_ALGORITHM.md`](agents/ENGINEERING_ALGORITHM.md): **make requirements less dumb** → **delete waste** → **optimize** → **accelerate the right process** → **automate last**. First principles over cargo cult; **the best part is no part** when it adds no value; never automate broken work.
+
+### Fleet at a glance
+
+**Who does what** (GitOps vs SecOps vs ITSM vs builders, **Chief** vs **ahead-chief**, workspace → `agentId` → Archivist) lives in **[`docs/FLEET-ROSTER.md`](docs/FLEET-ROSTER.md)** — start there when splitting work or registering agents in `openclaw.json`.
+
+| Squad | Agents | Notes |
+|-------|--------|--------|
+| **Delivery** | Bob (`gitbob`), Kate (`kubekate`), Greg (`grafgreg`) | Kate uses **`kubernetes`** + **`argocd`** MCPs (no separate `argo` agent). |
+| **Factory** | Forge (`mcp-builder`), Quill (`skill-builder`) | **`skill-builder`** primary model **`openclaw-opus-46`**; research + repo skills merged here. |
+
 ---
 
 ## 🧠 The Differentiator: Untouchable Multi-Team Memory
@@ -49,7 +62,7 @@ Security is not an afterthought; it is the foundation. We guarantee that **no ag
 
 1. **NemoClaw Sandboxing:** Every agent runs inside a strict, policy-controlled OpenShell sandbox. Egress is explicitly whitelisted. An agent cannot simply `curl` an external server to exfiltrate data.
 2. **MCP as the Security Boundary:** We use the **Model Context Protocol (MCP)** to mathematically isolate sensitive operations:
-    * Agents do not hold ServiceNow API keys; they talk to the ServiceNow MCP server.
+    * Agents do not hold ServiceNow API keys; **Birdman** (`snow-birdman`) talks to the ServiceNow MCP server for incidents and **change requests** — Chief routes ITSM work there, not into raw credentials.
     * Agents do not hold Palo Alto firewall credentials; they query the Palo Alto MCP server.
     * **The CTO Guarantee:** Even if an agent goes rogue or suffers a prompt injection attack, **there are no keys to leak.** 
 
@@ -63,55 +76,80 @@ Just like your engineering organization, we divide tasks into highly specialized
 * **Chief:** The orchestrator. Takes natural language requests, formulates a safe execution plan, and stores task briefs in Archivist. The Chief *never* executes cluster or Git commands directly—enforcing a strict blast radius.
 
 ### ⚙️ The Execution Fleet
-* **GitBob:** The GitOps Specialist. Manages repositories, opens Merge Requests, and triggers CI pipelines via the GitLab MCP.
-* **KubeKate & Argo:** The Deployment Specialists. KubeKate interacts with the Kubernetes MCP for raw cluster management, while Argo handles continuous deployment syncs.
+* **Bob (GitBob):** The Git pipeline specialist — repositories, merge requests, and CI via the GitLab MCP (`gitbob`).
+* **Kate (KubeKate):** **Kubernetes and Argo CD** — one specialist uses both the **`kubernetes`** and **`argocd`** MCPs for live cluster ops and GitOps sync/health/rollback (`kubekate`).
 * **Palo Expert:** The SecOps Auditor. Validates firewall configurations via the Palo Alto MCP, ensuring every deployment complies with enterprise security baselines.
+* **Birdman (`snow-birdman`):** The ServiceNow / **change-control** specialist. Owns the **`servicenow`** MCP — incidents and **change requests** (CAB-track) so GitOps moves leave an ITSM trail (*Phoenix Project* vibes: governance without gridlock). Nothing credentialed lives in the agent — only in the MCP server.
 
-### 🏗️ The Autonomous Builders
-* **Skill-Builder & MCP-Builder:** A fleet that writes its own tools. Dedicated agents tasked solely with writing new OpenClaw skills or building new Python MCP servers, ensuring the core team remains focused on production.
+### 🏗️ The Autonomous Builders (factory)
+* **Forge (`mcp-builder`)** ships MCP server images and k8s deploys. **Quill (`skill-builder`)** researches, writes playbooks, and authors repo **`openclaw-skills/`** (primary model **`openclaw-opus-46`**). Two factory roles only — no separate research-only agent.
 
 ---
 
 ## 🏗️ Architecture Flow
 
+**Editable diagram (judges / slide):** [`docs/diagrams/nemoclaw-fleet-architecture.drawio`](docs/diagrams/nemoclaw-fleet-architecture.drawio) — Vault, gateway, agent fleet, Archivist, Kubernetes + Argo CD + MCP aggregator + MCP backends. Open in [diagrams.net](https://app.diagrams.net).
+
+Chief is the **single orchestrator**: the gateway routes the human to Chief, and **Chief delegates** every execution path to the right specialist (Bob, Kate, Greg, Palo Expert, **Birdman** for ServiceNow change control, factory builders). Specialists talk to **MCP servers** (keys live there) and persist **receipts** in Archivist.
+
 ```mermaid
 flowchart TD
-    subgraph NemoClaw["NVIDIA NemoClaw Sandboxes (Zero Keys)"]
+    subgraph NemoClaw["NVIDIA NemoClaw sandboxes — agents never hold keys"]
         Gateway["OpenShell Gateway & Policy Engine"]
-        
-        subgraph Fleet["Agent Fleet (OpenClaw)"]
-            Chief["Chief<br/>(Coordination)"]
-            GitBob["GitBob<br/>(GitOps)"]
-            KubeKate["KubeKate<br/>(K8s/Argo)"]
-            PaloExpert["Palo Expert<br/>(SecOps)"]
-            Builders["Builders<br/>(Skills/MCPs)"]
+
+        subgraph Fleet["Agent fleet — Chief delegates to specialists"]
+            Chief["Chief<br/>(orchestrator)"]
+            GitBob["Bob<br/>GitLab / CI"]
+            Kate["Kate<br/>K8s + Argo CD"]
+            GregNode["Greg<br/>Grafana"]
+            PaloExpert["Palo Expert<br/>PAN-OS / SecOps"]
+            Birdman["Birdman<br/>ServiceNow / CHG"]
+            Builders["Forge + Quill<br/>mcp-builder / skill-builder"]
         end
     end
 
-    subgraph Memory["Untouchable Memory"]
-        Archivist[("Archivist (Qdrant + SQLite)<br/>RBAC Namespaces")]
+    subgraph Memory["Untouchable memory"]
+        Archivist[("Archivist (Qdrant + SQLite)<br/>RBAC namespaces")]
     end
 
-    subgraph External["Isolated MCP Servers (Hold the Keys)"]
-        PaloAlto["Palo Alto Networks MCP"]
-        ServiceNow["ServiceNow MCP"]
-        GitLab["GitLab MCP"]
+    subgraph MCP["External MCP — credentials & APIs stay here"]
+        GitLabMCP["GitLab MCP"]
+        ArgoMCP["Argo CD MCP"]
+        K8sMCP["Kubernetes MCP"]
+        GrafanaMCP["Grafana MCP"]
+        PaloMCP["Palo Alto MCP"]
+        SnowMCP["ServiceNow MCP"]
     end
 
-    Gateway -->|"Routes Telegram"| Chief
-    Chief -.->|"Delegates Task"| Fleet
-    
-    Fleet <-->|"Reads/Writes Context"| Archivist
-    
-    GitBob -->|"Triggers Pipelines"| GitLab
-    PaloExpert -->|"Audits Config"| PaloAlto
-    Chief -->|"Updates Tickets"| ServiceNow
+    Gateway -->|"Telegram / chat"| Chief
+
+    Chief -->|"delegates"| GitBob
+    Chief -->|"delegates"| Kate
+    Chief -->|"delegates"| GregNode
+    Chief -->|"delegates"| PaloExpert
+    Chief -->|"delegates"| Birdman
+    Chief -->|"delegates"| Builders
+
+    Chief <-->|"coordination & synthesis"| Archivist
+    GitBob <-->|"briefs & receipts"| Archivist
+    Kate <-->|"briefs & receipts"| Archivist
+    GregNode <-->|"briefs & receipts"| Archivist
+    PaloExpert <-->|"briefs & receipts"| Archivist
+    Birdman <-->|"CHG / INC receipts"| Archivist
+    Builders <-->|"briefs & receipts"| Archivist
+
+    GitBob --> GitLabMCP
+    Kate --> ArgoMCP
+    Kate --> K8sMCP
+    GregNode --> GrafanaMCP
+    PaloExpert --> PaloMCP
+    Birdman -->|"incidents & change requests"| SnowMCP
 
     %% Styling
     classDef memory fill:#f9f9f9,stroke:#333,stroke-width:2px;
     class Archivist memory;
     classDef mcp fill:#e1f5fe,stroke:#333,stroke-width:2px;
-    class PaloAlto,ServiceNow,GitLab mcp;
+    class GitLabMCP,ArgoMCP,K8sMCP,GrafanaMCP,PaloMCP,SnowMCP mcp;
 ```
 
 ---

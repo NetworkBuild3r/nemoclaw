@@ -27,12 +27,12 @@ See [`../stack/README.md`](../stack/README.md) for LiteLLM + env file notes.
 | Path | Purpose |
 |------|---------|
 | `archivist-oss/` | **Archivist + Qdrant** service (Python MCP server) — **included in full for GitHub** |
-| `agents/` | GitOps agent workspaces (Chief, GitBob, Argo, Kate, Greg) |
+| `agents/` | Agent workspaces — roster + layers (**Chief** vs **ahead-chief**, GitOps, SecOps, ITSM, builders): **[`FLEET-ROSTER.md`](FLEET-ROSTER.md)** — includes **migration** notes if you still have old `argo` / `researcher` / `skill-author` ids in `openclaw.json`. |
 | `openclaw-skills/` | **OpenClaw runtime** AgentSkills (`SKILL.md` trees); loaded via `skills.load.extraDirs` in `openclaw.json`. See skill **`nemoclaw-skill-builder`** for how to add skills. |
 | `.cursor/skills/` | Symlinks into `openclaw-skills/` for **Cursor** only (same content) |
 | `stack/` | LiteLLM config (example + local gitignored), `docker-compose.override.yml`, stack `.env` |
 | `config/`, `policies/`, `prompts/`, `sample-memories/` | Challenge config and seed memories (`config/mcporter.example.json` = redacted MCP template) |
-| `docs/` | Vault, submission checklist, Archivist bridge, **[MCP + NVIDIA models](MCP-AND-MODELS.md)** |
+| `docs/` | Vault, submission checklist, **[fleet roster](FLEET-ROSTER.md)**, Archivist bridge, **[MCP + NVIDIA models](MCP-AND-MODELS.md)** |
 | `vendor/NemoClaw/` | **Not in git** (large) — `git clone https://github.com/NVIDIA/NemoClaw` beside this repo |
 | `mcp-servers/paloalto`, `mcp-servers/servicenow` | PAN-OS + ServiceNow **SSE MCP** (aggregator-friendly `/mcp/sse`) |
 | `deploy/k8s/` | `paloalto-mcp`, `servicenow-mcp`, **[aggregator wiring](../deploy/k8s/mcp-aggregator/README.md)** |
@@ -43,6 +43,10 @@ See [`../stack/README.md`](../stack/README.md) for LiteLLM + env file notes.
 ### MCP URLs (`mcporter.json`)
 
 Copy [`config/mcporter.example.json`](../config/mcporter.example.json) to **`config/mcporter.json`** (gitignored) and set aggregator, Archivist, and optional Brave Search URLs for your environment.
+
+**Public GitHub clone:** `agents/**/mcporter.json` is **not** committed (each copy duplicated lab URLs). For local OpenClaw workspaces that expect `mcporter.json` beside `AGENTS.md`, **copy or symlink** from your private `config/mcporter.json`.
+
+After editing [`config/namespaces.yaml`](../config/namespaces.yaml) (e.g. new **`change-control`** namespace for **Birdman** / `snow-birdman`), restart the Archivist container so RBAC reloads (`docker compose restart archivist` from the compose project that mounts config).
 
 ---
 

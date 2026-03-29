@@ -26,6 +26,20 @@ vendor/NemoClaw/
 **/__pycache__/
 *.pyc
 .pytest_cache/
+**/venv/
+.venv/
+
+# Node (never commit dependencies)
+node_modules/
+
+# Experimental MCP trees under agent workspaces (sources of truth: mcp-servers/, deploy/k8s/)
+agents/github-bob/mcp/
+agents/github-bob/mcp-github/
+agents/github-bob/servicenow-mcp/
+agents/mcp-builder/mcp-servers/
+
+# Per-agent mcporter copies (lab URLs); use config/mcporter.json.example + local config/mcporter.json
+agents/**/mcporter.json
 
 # OpenClaw global state (co-located under repo; ~/.openclaw is a symlink)
 .openclaw/*
