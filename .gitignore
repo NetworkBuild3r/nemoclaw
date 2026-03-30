@@ -32,7 +32,7 @@ vendor/NemoClaw/
 # Node (never commit dependencies)
 node_modules/
 
-# Experimental MCP trees under agent workspaces (sources of truth: mcp-servers/, deploy/k8s/)
+# GitLab MCP clones / CI checkouts — do not commit (canonical reference code: mcp-servers/, see mcp-servers/README.md)
 agents/github-bob/mcp/
 agents/github-bob/mcp-github/
 agents/github-bob/servicenow-mcp/
